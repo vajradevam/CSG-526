@@ -1,0 +1,247 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[margin=2.2cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[most]{tcolorbox}
+\usepackage{needspace}
+\usepackage{hyperref}
+\input{../common/hkmacros.tex}
+
+\hypersetup{colorlinks=true,linkcolor=hkblue,urlcolor=hkblue}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+\setlist{nosep,leftmargin=1.4em}
+
+% ---- boxes ---------------------------------------------------------------
+\newtcolorbox{say}{enhanced,colback=hkblue!5,colframe=hkblue!60,boxrule=0.5pt,arc=2pt,
+  left=6pt,right=6pt,top=5pt,bottom=4pt,title={\small\bfseries Say},
+  coltitle=white,attach boxed title to top left={yshift=-2mm,xshift=2mm},
+  boxed title style={colback=hkblue,arc=2pt,boxrule=0pt,top=1pt,bottom=1pt}}
+\newtcolorbox{onscreen}{enhanced,colback=hkgreen!6,colframe=hkgreen!70!black,boxrule=0.5pt,arc=2pt,
+  left=6pt,right=6pt,top=5pt,bottom=4pt,title={\small\bfseries On the slide},
+  coltitle=white,attach boxed title to top left={yshift=-2mm,xshift=2mm},
+  boxed title style={colback=hkgreen!70!black,arc=2pt,boxrule=0pt,top=1pt,bottom=1pt}}
+\newtcolorbox{ask}{enhanced,colback=hkorange!8,colframe=hkorange,boxrule=0.5pt,arc=2pt,
+  left=6pt,right=6pt,top=5pt,bottom=4pt,title={\small\bfseries Ask the class},
+  coltitle=white,attach boxed title to top left={yshift=-2mm,xshift=2mm},
+  boxed title style={colback=hkorange,arc=2pt,boxrule=0pt,top=1pt,bottom=1pt}}
+\newtcolorbox{key}{enhanced,colback=hkred!6,colframe=hkred,boxrule=0.5pt,arc=2pt,
+  left=6pt,right=6pt,top=5pt,bottom=4pt,title={\small\bfseries Takeaway},
+  coltitle=white,attach boxed title to top left={yshift=-2mm,xshift=2mm},
+  boxed title style={colback=hkred,arc=2pt,boxrule=0pt,top=1pt,bottom=1pt}}
+
+\newcommand{\slidehead}[3]{%
+  \Needspace{9\baselineskip}\vspace{4pt}\noindent\colorbox{hkblue!12}{\parbox{\dimexpr\linewidth-2\fboxsep}{%
+  \textbf{\color{hkblue}Slide #1\ \ #2}\hfill{\small\color{hkgrey}#3}}}\par\vspace{2pt}}
+
+\title{\textbf{Bipartite Matching in $O(m\sqrt n)$ Time}\\[2pt]
+\large Lecture script: the Hopcroft--Karp algorithm\\[2pt]
+\normalsize CS-G526 \quad Presenter A \& Presenter B}
+\author{}\date{}
+
+\begin{document}
+\maketitle
+
+\section*{How to use this document}
+The talk is built as a \textbf{story with pictures}. There are almost no proofs on the slides; the ideas are explained on the same example graph from the first slide to the last. For every slide you get: what to say (in plain words), what is on the slide, sometimes a question for the class, and a one-sentence takeaway. At the end there is a short appendix with the proofs, only for when someone asks.
+
+\textbf{The one rule:} say the intuition first, the formula second. If you catch yourself reading a formula aloud, stop and say what it \emph{means}.
+
+\begin{center}
+\begin{tabular}{llcl}
+\toprule
+\textbf{Who} & \textbf{Slides} & \textbf{Minutes} & \textbf{Story part}\\
+\midrule
+A & 1--10 & 12 & the problem, the repair trick, Berge, the slow classical method\\
+B & 11--21 & 16 & colliding paths, BFS ripples, DFS, the example, why $\sqrt n$, summary\\
+\bottomrule
+\end{tabular}
+\end{center}
+Total about 28 minutes plus questions. Animated slides (greedy, chain reaction, BFS, DFS) are \emph{one} slide number with several clicks.
+
+\textbf{If you run late:} skip the picture on slide 8 (just state Berge's theorem) and slide 19. \textbf{If early:} linger on the DFS slide 13; it is the heart of the example.
+
+\textbf{The running example.} Workers $a,b,c,d,e$; jobs $1,\dots,5$. Who can do what: $a\!:\!\{1,3\}$, $b\!:\!\{2,5\}$, $c\!:\!\{4,5\}$, $d\!:\!\{1,2\}$, $e\!:\!\{1\}$. The best answer is $5$: $a3,b5,c4,d2,e1$. Everything in the talk happens on this one graph.
+
+% =====================================================================
+\part*{Presenter A \quad The problem and the repair trick}
+
+\slidehead{1--2}{Title; the story in four questions}{1 min}
+\begin{say}
+Today we look at a very classical problem, matching, and a 1973 algorithm by Hopcroft and Karp that is still the one people use. The story has four questions. First, what is the problem. Second, if I have a bad answer, how do I repair it. That is my half. Then [Presenter B] asks: how do I do these repairs fast, and how fast is it really.
+\end{say}
+
+\slidehead{3}{Workers and jobs}{1.5 min}
+\begin{onscreen}
+The 5-by-5 graph. Left: workers. Right: jobs. A line means ``can do''.
+\end{onscreen}
+\begin{say}
+Five workers, five jobs. A line means this worker is able to do this job. Each worker takes at most one job, each job needs at most one worker. What is the largest number of jobs we can fill?
+\end{say}
+\begin{ask}
+Give them 20 seconds. Someone will notice ``$e$ can only do job 1'' and find the answer by hand. Say: ``Right, you used your eyes. A computer has no eyes; we need a method that always works.''
+\end{ask}
+
+\slidehead{4}{Same thing in graph language}{1.5 min}
+\begin{say}
+In graph words: the workers and jobs are two groups, and lines only go between groups. That is a bipartite graph. A set of lines where nobody is used twice is a \emph{matching}. A worker or job without a partner is \emph{free}. We want the biggest matching.
+This is not a toy: scheduling, assigning tasks, pairing students with projects, and it is a building block inside larger algorithms. Before 1973 the best running time was $O(mn)$, where $n$ is the number of vertices and $m$ the number of edges. Hopcroft and Karp get $O((m+n)\sqrt n)$. Our job today is to see where that $\sqrt n$ comes from.
+\end{say}
+
+\slidehead{5}{First idea: be greedy}{1.5 min}
+\begin{onscreen}
+Click through $a1$, $b2$, $c4$. Then green rings on $d,e,3,5$.
+\end{onscreen}
+\begin{say}
+The first idea everyone has: go through the edges, and take an edge when both ends are free. Take $a$--$1$. Take $b$--$2$. Take $c$--$4$. Now $d$ wants 1 or 2, both taken. $e$ wants 1, taken. We are stuck with three pairs.
+But five is possible: $e1, d2, b5, c4, a3$. So greedy is \emph{maximal} (nothing can be added) but not \emph{maximum}. The important question is not ``how do I choose better at the start'' but: \textbf{can I repair what I have without starting over?}
+\end{say}
+\begin{key}Greedy gets stuck because early choices can't be undone; we need a repair move.\end{key}
+
+\slidehead{6}{The repair: a chain reaction}{2 min}
+\begin{onscreen}
+Five clicks: $d$ asks for 1; 1 belongs to $a$; $a$ moves to 3; everyone is happy.
+\end{onscreen}
+\begin{say}
+Look at worker $d$: unassigned. Job 3: unfilled. $d$ would love job 1. But job 1 belongs to $a$. Don't give up: ask $a$ to give it up. Can $a$ be happy elsewhere? Yes, $a$ can do job 3, which is free! So $a$ moves to 3, and $d$ takes 1. We went from three pairs to four, and we did not start over; we only re-routed along a chain: $d$, job 1, $a$, job 3.
+\end{say}
+\begin{key}A bad matching is improved by a chain of swaps that ends in a free vertex.\end{key}
+
+\slidehead{7}{That chain is an augmenting path}{1.5 min}
+\begin{say}
+That chain has a name: an \emph{augmenting path}. It starts at a free worker, then alternates: a line that is not in the matching, a line that is, a line that is not, and so on, and it ends at a free job. Now flip it: the in-matching lines leave, the others enter. There is always one more line entering than leaving, so the matching grows by exactly one. Everybody in the middle just changes partner; nobody is booked twice.
+\end{say}
+\begin{ask}
+``Why does the path always have one more outside edge than inside edge?'' Because it starts and ends with an outside edge, and they alternate.
+\end{ask}
+
+\slidehead{8}{When can we stop? Berge}{2 min}
+\begin{onscreen}
+Three little pictures: a path that starts and ends with $N$ (augmenting), a cycle (tie), a path that starts and ends with $M$.
+\end{onscreen}
+\begin{say}
+Natural question: if I can't find any chain, am I done? Berge's theorem says yes: \textbf{a matching is maximum exactly when there is no augmenting path.}
+Why? Suppose someone has a better matching $N$ than mine, $M$. Draw both on the same picture, and look only at the lines that are in exactly one of them. Since everyone has at most one line from each, this picture falls apart into paths and cycles, with lines alternating between my colour and theirs. In a cycle it is a tie. A path is either tied, or I am ahead, or they are ahead. They are ahead overall, so somewhere there must be a path in which they have one more. That path starts and ends with their lines, which means it is an augmenting path for me. So ``no augmenting path'' means nobody can beat me.
+\end{say}
+\begin{key}No augmenting path means we are optimal, so ``keep finding paths'' is a complete algorithm.\end{key}
+
+\slidehead{9}{The classical algorithm}{1.5 min}
+\begin{say}
+So the algorithm is three lines: start with nothing; while there is an augmenting path, find one and flip it. At most $n/2$ flips, because each adds one edge. Finding a path is a graph search, $O(m)$. So we get $O(mn)$.
+\end{say}
+
+\slidehead{10}{But look at what we are wasting}{1 min}
+\begin{onscreen}
+Start of the algorithm: every edge is an augmenting path, rings everywhere. $a1,b2,c4$ in red.
+\end{onscreen}
+\begin{say}
+At the very start, every single edge is an augmenting path. And $a1$, $b2$ and $c4$ don't touch each other, so we could take all three at once. But the classical method does one full search for each. In a big graph there are thousands of such non-overlapping paths. What if one search could find \emph{many} of them? That is the question for [Presenter B].
+\end{say}
+\begin{key}Hand-off: one search should yield many flips.\end{key}
+
+% =====================================================================
+\part*{Presenter B \quad Many paths at once, and why it is fast}
+
+\slidehead{11}{Catch: paths can collide}{1 min}
+\begin{onscreen}
+After round 1: $d\to1\to a\to3$ in red and $e\to1$ in orange dashes.
+\end{onscreen}
+\begin{say}
+Thanks. Taking many at once has a catch. After the first round, suppose the matching is $a1, b2, c4$. Now $d$ and $e$ are free. $d$ can go $d,1,a,3$. $e$ can go $e,1,a,3$. Both need job 1, worker $a$, and job 3. We can only do one. So the batch must be \textbf{vertex-disjoint}. And a design choice Hopcroft and Karp make: we only take the \textbf{shortest} augmenting paths. You will see why in a few minutes.
+\end{say}
+
+\slidehead{12}{Step 1: ripples (BFS)}{2 min}
+\begin{onscreen}
+Layer picture. Click 1: free workers. Click 2: jobs 1,2 and workers $a,b$. Click 3: free jobs 3,5. Click 4: ``first free jobs!''.
+\end{onscreen}
+\begin{say}
+How do I find all the shortest augmenting paths at once? Think of throwing stones in water: ripples from all the free workers at the same time. Layer 0: the free workers, $d$ and $e$. Next, from a worker you may use any line that is \emph{not} in the matching, which leads to jobs 1 and 2. Next, from a job you must follow its \emph{matching} line back to a worker: job 1 is held by $a$, job 2 by $b$. That is layer 2. Then again non-matching lines: from $a$ to job 3, from $b$ to job 5. The moment a layer contains a \emph{free} job, I stop. That is the first time any augmenting path is completed, so these are the shortest ones: length 3. I throw away everything beyond. For example $c$ is never reached.
+\end{say}
+\begin{key}BFS from all free workers gives layers; the first layer with a free job tells us the shortest length.\end{key}
+
+\slidehead{13}{Step 2: pick disjoint paths (DFS)}{2 min}
+\begin{onscreen}
+Same layered picture. Clicks: $d\to1$; $1\to a$; $a\to3$ (red: flip); $e$ crossed out.
+\end{onscreen}
+\begin{say}
+Now choose a set of non-overlapping paths in this layered picture. Go through the free workers one by one and walk down, always to the \emph{next} layer. $d$ goes to job 1, then to $a$, then to job 3: free! Flip those, and mark them as used. Now $e$: its only neighbour is job 1, which is used. Dead end. We cross out $e$ and, this is the trick, \textbf{we never look at a dead end again}. That means every line is looked at at most once, so this whole step costs $O(m+n)$, the same as a single BFS.
+\end{say}
+\begin{ask}
+``Did we find the best possible set?'' No: $d2b5$ and $e1a3$ would give \emph{two} paths. But we found a \emph{maximal} set (nothing can be added), and that is all we need.
+\end{ask}
+\begin{key}One round = BFS for layers + DFS for disjoint paths, $O(m+n)$ in total, and it flips many paths.\end{key}
+
+\slidehead{14}{The whole run on the example}{1.5 min}
+\begin{say}
+Here is the whole run. Round 1: shortest path length 1, we take three paths. Round 2: length 3, we take one. Round 3: length 5, one more: $e,1,d,2,b,5$. After round 3 the matching has five edges. Look at the table: the shortest path length went 1, 3, 5. It goes up every round. That is not a coincidence, and it is the key to the speed.
+\end{say}
+
+\slidehead{15}{Why shortest paths? They get used up}{1.5 min}
+\begin{say}
+Hopcroft and Karp prove two facts. Fact one: flipping a shortest augmenting path never makes a shorter one appear, so the shortest length can only go up. Fact two: two shortest paths of the same length never overlap, so they are all valid together and we can take them in any order.
+From these, here is the point. After a round that took a maximal set of length-$\ell$ paths, there is no path of length $\ell$ left. If there were, our search would have taken it. So the next shortest path is strictly longer. Shortest paths get used up, round by round, like clearing the nearby gaps first.
+\end{say}
+\begin{key}The shortest augmenting path strictly grows every round.\end{key}
+
+\slidehead{16}{How many rounds? About $\sqrt n$}{2 min}
+\begin{onscreen}
+Two-coloured bar: ``first $\sqrt n$ rounds'' and ``then at most $\sqrt n$ more''.
+\end{onscreen}
+\begin{say}
+So how many rounds? Here is the whole argument. \textbf{Part one:} the path length increases every round, so let's look at the first $\sqrt n$ rounds; that is $\sqrt n$ rounds. \textbf{Part two:} after those rounds every augmenting path that is still left has length at least $\sqrt n$. Remember that the augmenting paths we can combine are disjoint, so they don't share vertices. Each such path uses at least $\sqrt n$ vertices and the graph only has $n$ vertices. So there are at most $n/\sqrt n=\sqrt n$ of them left to gain. Each round gains at least one, so at most $\sqrt n$ more rounds.
+Total: at most about $2\sqrt n$ rounds.
+\end{say}
+\begin{ask}
+``Why $\sqrt n$ and not something else?'' Because it is the balance point. Pick a threshold $t$: before it there are $t$ rounds (lengths grow), after it at most $n/t$ rounds (long paths are few). $t+n/t$ is smallest at $t=\sqrt n$.
+\end{ask}
+\begin{key}Short paths: few rounds because lengths must grow. Long paths: few rounds because there are few of them.\end{key}
+
+\slidehead{17}{The bill}{1 min}
+\begin{say}
+Each round costs $O(m+n)$, the number of rounds is $O(\sqrt n)$, so we get $O((m+n)\sqrt n)$. To feel the difference: with ten thousand vertices and a hundred thousand edges, the classical method does about a billion steps, Hopcroft--Karp about ten million: a hundred times faster. For dense graphs it is $n^{5/2}$, the number in the paper's title.
+\end{say}
+
+\slidehead{18--20}{Algorithm, what came after, summary}{2.5 min}
+\begin{say}
+One slide of pseudocode: repeat: BFS for layers, DFS for disjoint paths, flip, until the BFS finds no free job. Three ideas hold it up: Berge for correctness, ``shortest and disjoint'' for flipping many at once, and growing lengths for the $\sqrt n$ rounds.
+After 1973: the same idea works for max-flow with unit capacities (Dinic's blocking flows; Even--Tarjan 1975); Micali--Vazirani did general graphs in $O(m\sqrt n)$; and recent max-flow work is almost linear in theory, but Hopcroft--Karp is still what people code up.
+\end{say}
+\begin{key}Chains of swaps repair a matching; many shortest disjoint chains per search, with growing lengths, give $\sqrt n$ rounds.\end{key}
+
+\slidehead{21}{Backup}{if asked}
+Proof sketch of ``shortest never gets shorter''; see the appendix.
+
+% =====================================================================
+\section*{Appendix A \quad Proofs, only if someone asks}
+
+\textbf{Flip lemma.} Along an augmenting path $P=(v_1,\dots,v_{2k})$ each interior vertex had exactly one matching edge, on $P$, and has exactly the other $P$-edge afterwards; the endpoints were free and get one edge. So $M\oplus P$ is a matching, with $k$ new and $k-1$ old edges: $|M\oplus P|=|M|+1$.
+
+\textbf{Berge / Theorem 1 of the paper.} If $|N|>|M|$, look at $M\oplus N$. Every vertex has degree $\le2$ there and edges alternate between $M$ and $N$, so components are paths and even cycles. For a component $C$ let $\delta(C)=|C\cap N|-|C\cap M|\in\{-1,0,1\}$. Summing, $\sum\delta=|N|-|M|>0$, so at least $|N|-|M|$ components have $\delta=1$. Those are paths starting and ending with $N$-edges whose endpoints are free in $M$ (otherwise the endpoint would have two $N$-edges, or a further edge of $M\oplus N$). So they are augmenting paths for $M$, and they are vertex-disjoint.
+
+\textbf{Shortest paths never get shorter (paper's Theorem 2).} Let $P$ be a shortest augmenting path for $M$, and $P'$ augmenting for $M\oplus P$. Then $N=M\oplus P\oplus P'$ is a matching of size $|M|+2$, so $M\oplus N=P\oplus P'$ holds two disjoint augmenting paths for $M$, each of length $\ge|P|$. Thus $|P\oplus P'|\ge2|P|$. Since $|P\oplus P'|=|P|+|P'|-2|P\cap P'|$, we get $|P'|\ge|P|+2|P\cap P'|$.
+
+\textbf{Equal length means disjoint (paper's Corollary 4).} If $|P_i|=|P_j|$, they share no edge by the previous point. A shared vertex $v$ would be matched in $M_{i+1}$ by an edge of $P_i$; $P_j$ is augmenting there, so it cannot start or end at the matched $v$, and hence runs through that matching edge: a shared edge, contradiction. (For $i<j$ one first picks the closest non-disjoint pair, so that the paths in between do not touch either of them.) This is why all shortest paths in a round can be taken together.
+
+\textbf{Number of rounds (paper's Theorem 3).} Let $s$ be the maximum size. If $|M|=r<s$, a maximum matching $N$ gives $s-r$ disjoint augmenting paths for $M$ that together use at most $r$ matching edges, so one of them has at most $\lfloor r/(s-r)\rfloor$ matching edges and length $\le2\lfloor r/(s-r)\rfloor+1$ (paper's Corollary 2). While $|M|<s-\sqrt s$ this is $\le2\lfloor\sqrt s\rfloor+1$, and lengths are odd and strictly increasing across rounds, so there are at most $\lfloor\sqrt s\rfloor+1$ such rounds. Afterwards at most $\lceil\sqrt s\rceil$ edges are missing and each round adds one. Total $\le2\lfloor\sqrt s\rfloor+2$.
+
+\textbf{DFS cost.} Each step of the search either moves an adjacency pointer forward (an edge is never looked at twice) or removes a dead-end vertex (never revisited). So a round costs $O(m+n)$ (paper's Algorithm B).
+
+\section*{Appendix B \quad Questions you may get}
+\begin{enumerate}[label=\textbf{Q\arabic*.},leftmargin=2.4em,itemsep=5pt]
+\item \emph{Why not take a \emph{maximum} set of disjoint paths per round?} Not needed: a maximal set already guarantees that the length grows. A maximum set is itself a harder (flow) problem.
+\item \emph{Does the order of workers matter?} For what we find in a round, yes (slide 13: $d$ first blocks $e$). For the $\sqrt n$ bound, no.
+\item \emph{Why stop the BFS at the first free job?} Everything beyond is longer than the shortest augmenting path, so it is not allowed in this round.
+\item \emph{What about non-bipartite graphs?} The layers break because of odd cycles (blossoms, Edmonds). Micali--Vazirani achieved the same $O(m\sqrt n)$ for general graphs later.
+\item \emph{How does this relate to max-flow?} Add a source before the workers and a sink after the jobs, all capacities 1. Augmenting paths are the same thing; a Hopcroft--Karp round is a Dinic blocking-flow phase.
+\item \emph{Is $O(\sqrt n)$ rounds what we see in practice?} The bound is a worst case; typical graphs need far fewer rounds.
+\item \emph{Where does $m\ge n/2$ come from?} With no isolated vertices $m\ge n/2$, so $O((m+n)\sqrt n)=O(m\sqrt n)$.
+\end{enumerate}
+
+\vfill
+\small\textit{Reference:} J.\,E.\ Hopcroft and R.\,M.\ Karp, \emph{An $n^{5/2}$ algorithm for maximum matchings in bipartite graphs}, SIAM J.\ Comput.\ 2(4), 1973, pp.\ 225--231. The follow-up facts on slide 19 are from general knowledge of the literature; check them before quoting precisely.
+
+\end{document}

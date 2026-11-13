@@ -1,0 +1,60 @@
+% Shared TikZ styles, colours and the running example.
+% Used by both slides/slides.tex and notes/lecture.tex.
+%
+% Running example (X = {a,...,e}, Y = {1,...,5}):
+%   edges  a1 a3 | b2 b5 | c4 c5 | d1 d2 | e1
+%   Phase 1: shortest aug. path length 1  -> a1, b2, c4
+%   Phase 2: shortest aug. path length 3  -> d1 a3
+%   Phase 3: shortest aug. path length 5  -> e1 d2 b5   (perfect matching)
+
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc,fit,backgrounds,decorations.pathreplacing,shapes.geometric}
+
+\definecolor{hkblue}{HTML}{2F5D9B}
+\definecolor{hkorange}{HTML}{D1793A}
+\definecolor{hkred}{HTML}{C0392B}
+\definecolor{hkgreen}{HTML}{2E8B57}
+\definecolor{hkgrey}{HTML}{6B6B6B}
+
+\newcommand{\symdiff}{\oplus}
+\newcommand{\M}{M}
+\newcommand{\bigO}[1]{O\!\left(#1\right)}
+
+\tikzset{
+  boy/.style={circle, draw=hkblue!80, fill=hkblue!16, minimum size=6.6mm,
+              inner sep=0pt, font=\footnotesize, thick},
+  girl/.style={circle, draw=hkorange!90, fill=hkorange!22, minimum size=6.6mm,
+               inner sep=0pt, font=\footnotesize, thick},
+  freev/.style={draw=hkgreen, line width=1.3pt},   % ring that marks a free vertex
+  unm/.style={line width=0.6pt, draw=black!35},          % unmatched edge
+  mat/.style={line width=1.9pt, draw=black!80},          % matching edge
+  aug/.style={line width=2.2pt, draw=hkred},             % edge on augmenting path
+  Medge/.style={line width=1.9pt, draw=hkblue},
+  Nedge/.style={line width=1.9pt, draw=hkorange, dashed},
+  layerlab/.style={font=\footnotesize\bfseries, text=hkblue!85!black},
+}
+
+% ---- the running example --------------------------------------------------
+% left column top->bottom: a e d b c ; right column: 3 1 2 5 4   (planar drawing)
+\newcommand{\exnodes}{%
+  \node[boy]  (xa) at (0, 2.2) {$a$};
+  \node[boy]  (xe) at (0, 1.1) {$e$};
+  \node[boy]  (xd) at (0, 0.0) {$d$};
+  \node[boy]  (xb) at (0,-1.1) {$b$};
+  \node[boy]  (xc) at (0,-2.2) {$c$};
+  \node[girl] (y3) at (2.8, 2.2) {$3$};
+  \node[girl] (y1) at (2.8, 1.1) {$1$};
+  \node[girl] (y2) at (2.8, 0.0) {$2$};
+  \node[girl] (y5) at (2.8,-1.1) {$5$};
+  \node[girl] (y4) at (2.8,-2.2) {$4$};
+}
+\newcommand{\exedges}{%
+  \draw[unm] (xa)--(y1); \draw[unm] (xa)--(y3);
+  \draw[unm] (xb)--(y2); \draw[unm] (xb)--(y5);
+  \draw[unm] (xc)--(y4); \draw[unm] (xc)--(y5);
+  \draw[unm] (xd)--(y1); \draw[unm] (xd)--(y2);
+  \draw[unm] (xe)--(y1);
+}
+% highlight a vertex as free
+\newcommand{\freering}[1]{\draw[freev] (#1) circle (4.4mm);}

@@ -1,0 +1,571 @@
+\documentclass[aspectratio=169,11pt]{beamer}
+
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{booktabs}
+\usepackage{algorithm2e}
+\input{../common/hkmacros.tex}
+
+% ------------------------------------------------------------------ theme
+\usetheme{default}
+\setbeamercolor{structure}{fg=hkblue}
+\setbeamercolor{frametitle}{fg=hkblue}
+\setbeamercolor{block title}{bg=hkblue!14,fg=hkblue!85!black}
+\setbeamercolor{block body}{bg=hkblue!5}
+\setbeamercolor{block title alerted}{bg=hkred!14,fg=hkred!90!black}
+\setbeamercolor{block body alerted}{bg=hkred!5}
+\setbeamercolor{alerted text}{fg=hkred}
+\setbeamerfont{frametitle}{size=\Large,series=\bfseries}
+\setbeamerfont{block title}{size=\normalsize,series=\bfseries}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{blocks}[rounded][shadow=false]
+\setbeamertemplate{itemize items}[circle]
+
+\setbeamertemplate{frametitle}{%
+  \vskip1.2ex
+  \hspace*{0.2cm}\usebeamercolor[fg]{frametitle}\usebeamerfont{frametitle}\insertframetitle\par
+  \vskip-0.4ex
+  \hspace*{0.2cm}{\color{hkblue!55}\rule{\dimexpr\paperwidth-0.6cm\relax}{0.6pt}}%
+}
+
+\newcommand{\curspk}{A}
+\setbeamertemplate{footline}{%
+  \leavevmode\hbox to\paperwidth{%
+    \hspace{0.3cm}{\footnotesize\color{hkgrey}Hopcroft--Karp \textperiodcentered\ CS-G526}%
+    \hfill{\footnotesize\color{hkgrey}Presenter \curspk\quad \insertframenumber\,/\,\inserttotalframenumber}\hspace{0.3cm}}%
+  \vskip1.2ex}
+
+\title{Bipartite Matching in $O(m\sqrt n)$ Time}
+\author{Presenter A \and Presenter B}
+\date{CS-G526 \textperiodcentered\ November 2026}
+
+\DontPrintSemicolon
+\SetAlgoLined
+\SetKwComment{Comment}{// }{}
+
+% layered picture for phase 2 of the running example  (M = a1, b2, c4)
+\newcommand{\layerA}{%
+  \node[font=\footnotesize\bfseries,text=hkblue] at (0,1.75) {layer 0};
+  \node[font=\footnotesize\bfseries,text=hkblue] at (2.2,1.75) {layer 1};
+  \node[font=\footnotesize\bfseries,text=hkblue] at (4.4,1.75) {layer 2};
+  \node[font=\footnotesize\bfseries,text=hkblue] at (6.6,1.75) {layer 3};
+  \node[boy]  (Ld) at (0,0.8)  {$d$};
+  \node[boy]  (Le) at (0,-0.8) {$e$};
+  \node[girl] (L1) at (2.2,0.8)  {$1$};
+  \node[girl] (L2) at (2.2,-0.8) {$2$};
+  \node[boy]  (La) at (4.4,0.8)  {$a$};
+  \node[boy]  (Lb) at (4.4,-0.8) {$b$};
+  \node[girl] (L3) at (6.6,0.8)  {$3$};
+  \node[girl] (L5) at (6.6,-0.8) {$5$};
+}
+
+\begin{document}
+
+% ======================================================================
+\begin{frame}[plain]
+\begin{tikzpicture}[remember picture,overlay]
+  \fill[hkblue!6] (current page.south west) rectangle (current page.north east);
+  \fill[hkblue] (current page.north west) rectangle ([yshift=-3mm]current page.north east);
+\end{tikzpicture}
+\vspace{0.5cm}
+\begin{columns}[c,onlytextwidth]
+\column{0.62\textwidth}
+  {\color{hkblue}\Huge\bfseries Bipartite Matching\\[1mm] in $O(m\sqrt n)$ Time\par}
+  \vspace{4mm}
+  {\Large\color{black!70} The Hopcroft--Karp Algorithm\par}
+  \vspace{10mm}
+  {\large Presenter A \ \& \ Presenter B\par}
+  \vspace{1mm}
+  {\normalsize CS-G526 \textperiodcentered\ November 2026\par}
+  \vspace{9mm}
+  {\footnotesize\color{hkgrey}J.\,E.\ Hopcroft and R.\,M.\ Karp,
+   \emph{An $n^{5/2}$ algorithm for maximum matchings in bipartite graphs},
+   SIAM J.\ Comput.\ 2(4):225--231, 1973.\par}
+\column{0.36\textwidth}
+\centering
+\begin{tikzpicture}[scale=0.8,transform shape]
+  \exnodes \exedges
+  \draw[mat] (xa)--(y3); \draw[mat] (xb)--(y5); \draw[mat] (xc)--(y4);
+  \draw[mat] (xd)--(y2); \draw[mat] (xe)--(y1);
+\end{tikzpicture}
+\end{columns}
+\end{frame}
+
+% ======================================================================
+\begin{frame}{The story in four questions}
+\Large
+\begin{enumerate}\setlength\itemsep{12pt}
+  \item[\textcolor{hkblue}{\textbf{A1}}] \textbf{What} is the problem?\\
+  {\normalsize\color{hkgrey}Jobs and workers. Why does the obvious greedy idea fail?}
+  \item[\textcolor{hkblue}{\textbf{A2}}] \textbf{How} do we repair a bad assignment?\\
+  {\normalsize\color{hkgrey}Chain reactions of swaps (augmenting paths). When can we stop?}
+  \item[\textcolor{hkorange}{\textbf{B1}}] \textbf{How} do we speed it up?\\
+  {\normalsize\color{hkgrey}Do many swaps at once: ripples (BFS) and a careful search (DFS).}
+  \item[\textcolor{hkorange}{\textbf{B2}}] \textbf{How fast} is it really?\\
+  {\normalsize\color{hkgrey}Why only about $\sqrt n$ rounds are ever needed.}
+\end{enumerate}
+\end{frame}
+
+% ======================================================================
+\begin{frame}{Workers and jobs}
+\begin{columns}[c]
+\column{0.45\textwidth}
+\centering
+\begin{tikzpicture}[scale=1.1]
+  \exnodes \exedges
+  \node[above=2mm of xa, font=\small\bfseries, text=hkblue] {workers};
+  \node[above=2mm of y3, font=\small\bfseries, text=hkorange] {jobs};
+\end{tikzpicture}
+\column{0.53\textwidth}
+\Large
+Each line means: \emph{this worker can do this job.}\\[4mm]
+\normalsize
+\begin{itemize}\setlength\itemsep{8pt}
+  \item A worker does \textbf{at most one} job.
+  \item A job needs \textbf{at most one} worker.
+\end{itemize}
+\vspace{3mm}
+\begin{alertblock}{Question}
+What is the largest number of jobs we can fill at the same time?
+\end{alertblock}
+\end{columns}
+\end{frame}
+
+% ======================================================================
+\begin{frame}{Same thing, in the language of graphs}
+\begin{columns}[T]
+\column{0.5\textwidth}
+\begin{block}{Bipartite graph}
+Two groups (workers $X$, jobs $Y$). Edges only go \emph{between} the groups.
+\end{block}
+\begin{block}{Matching}
+A set of edges where \textbf{no two share a vertex}: each worker and job used at most once.
+\end{block}
+\begin{block}{Free vertex}
+A worker or job that currently has no partner.
+\end{block}
+\column{0.46\textwidth}
+\begin{alertblock}{The problem}
+Find a matching with the \textbf{most edges} (a \emph{maximum} matching).
+\end{alertblock}
+\vspace{3mm}
+Where it shows up: assigning tasks, scheduling, pairing students with projects, and as a building block in bigger algorithms.
+\vspace{4mm}
+
+\textbf{Before 1973:} $O(mn)$ time.\\
+\textbf{Hopcroft--Karp:} $O\big((m+n)\sqrt n\big)$.
+\end{columns}
+\end{frame}
+
+% ======================================================================
+\begin{frame}{First idea: be greedy}
+\begin{columns}[c]
+\column{0.44\textwidth}
+\centering
+\begin{tikzpicture}[scale=1.05]
+  \exnodes \exedges
+  \draw[mat] (xa)--(y1);
+  \only<2->{\draw[mat] (xb)--(y2);}
+  \only<3->{\draw[mat] (xc)--(y4);}
+  \only<4->{\freering{xd}\freering{xe}\freering{y3}\freering{y5}}
+\end{tikzpicture}
+\column{0.54\textwidth}
+Take an edge whenever both ends are free.
+\begin{itemize}\setlength\itemsep{6pt}
+  \item<1-> $a\!-\!1$
+  \item<2-> $b\!-\!2$
+  \item<3-> $c\!-\!4$
+  \item<4-> Now $d$ wants $\{1,2\}$ and $e$ wants $\{1\}$: all taken. \alert{Stuck.}
+\end{itemize}
+\vspace{2mm}
+\onslide<5->{
+Three pairs, yet five are possible: $e1,\,d2,\,b5,\,c4,\,a3$.
+\begin{alertblock}{The real question}
+Can we \emph{repair} the assignment without throwing it away?
+\end{alertblock}}
+\end{columns}
+\end{frame}
+
+% ======================================================================
+\begin{frame}{The repair: a chain reaction}
+\begin{columns}[c]
+\column{0.44\textwidth}
+\centering
+\begin{tikzpicture}[scale=1.05]
+  \exnodes \exedges
+  \draw[mat] (xb)--(y2); \draw[mat] (xc)--(y4);
+  \only<1-4>{\draw[mat] (xa)--(y1);}
+  \only<5->{\draw[mat] (xa)--(y3); \draw[mat] (xd)--(y1);}
+  \only<1>{\freering{xd}\freering{y3}}
+  \only<2-4>{\draw[aug] (xd)--(y1); \freering{xd}\freering{y3}}
+  \only<3-4>{\draw[aug] (xa)--(y1);}
+  \only<4>{\draw[aug] (xa)--(y3);}
+\end{tikzpicture}
+\column{0.54\textwidth}
+\begin{enumerate}\setlength\itemsep{7pt}
+  \item<1-> Worker $d$ is unassigned. Job $3$ is unfilled.
+  \item<2-> $d$ asks for job $1$.
+  \item<3-> Job $1$ belongs to $a$. Ask $a$ to give it up\ldots
+  \item<4-> \ldots $a$ can take job $3$, which is free!
+  \item<5-> Everyone is happy: $d\!-\!1$ and $a\!-\!3$. \textbf{One more pair!}
+\end{enumerate}
+\vspace{2mm}
+\onslide<5->{\begin{alertblock}{}
+We re-routed, not restarted. Matching size: $3\to4$.
+\end{alertblock}}
+\end{columns}
+\end{frame}
+
+% ======================================================================
+\begin{frame}{That chain has a name: an augmenting path}
+\begin{block}{Augmenting path}
+Start at a \textbf{free} worker. Alternate: edge \emph{not} in the matching, edge \emph{in} the matching, edge \emph{not} in\ldots{} End at a \textbf{free} job.
+\end{block}
+\vspace{2mm}
+\centering
+\begin{tikzpicture}[scale=1.0]
+  \node[boy] (a) at (0,0) {$d$};
+  \node[girl] (b) at (2.4,0) {$1$};
+  \node[boy] (c) at (4.8,0) {$a$};
+  \node[girl] (d) at (7.2,0) {$3$};
+  \draw[aug] (a)--node[above,font=\footnotesize]{not in $M$}(b);
+  \draw[aug,line width=3.4pt] (b)--node[above=1pt,font=\footnotesize]{in $M$}(c);
+  \draw[aug] (c)--node[above,font=\footnotesize]{not in $M$}(d);
+  \freering{a}\freering{d}
+  \node[font=\footnotesize,text=hkgreen] at (0,-0.9) {free};
+  \node[font=\footnotesize,text=hkgreen] at (7.2,-0.9) {free};
+\end{tikzpicture}
+
+\vspace{4mm}
+\raggedright
+\textbf{Flip it:} in-matching edges leave, the others enter.
+\begin{itemize}\setlength\itemsep{4pt}
+  \item One more edge enters than leaves $\Rightarrow$ the matching grows by \textbf{exactly 1}.
+  \item Middle vertices just swap partner; both ends get a partner. Nobody is double-booked.
+\end{itemize}
+\end{frame}
+
+% ======================================================================
+\begin{frame}{When can we stop?}
+\begin{alertblock}{Berge's theorem}
+A matching is maximum \;$\Longleftrightarrow$\; there is \textbf{no augmenting path}.
+\end{alertblock}
+\vspace{2mm}
+{\small\textbf{Why?} Growing is clear. For the other direction, compare $M$ with a \emph{better} matching $N$ by drawing both on top of each other:}
+
+\begin{center}
+\begin{tikzpicture}[scale=1.0,v/.style={circle,fill=black!70,inner sep=1.5pt}]
+  \node[v](p1) at (0,0){}; \node[v](p2) at (1.2,0){}; \node[v](p3) at (2.4,0){}; \node[v](p4) at (3.6,0){};
+  \draw[Nedge](p1)--(p2); \draw[Medge](p2)--(p3); \draw[Nedge](p3)--(p4);
+  \node[font=\footnotesize,align=center] at (1.8,-0.8) {starts and ends with $N$:\\ \textbf{augmenting for $M$}};
+  \node[v](c1) at (5.4,-0.3){}; \node[v](c2) at (6.6,-0.3){}; \node[v](c3) at (6.6,0.9){}; \node[v](c4) at (5.4,0.9){};
+  \draw[Medge](c1)--(c2); \draw[Nedge](c2)--(c3); \draw[Medge](c3)--(c4); \draw[Nedge](c4)--(c1);
+  \node[font=\footnotesize,align=center] at (6,-1.1) {cycle: tie};
+  \node[v](q1) at (8.2,0){}; \node[v](q2) at (9.4,0){}; \node[v](q3) at (10.6,0){}; \node[v](q4) at (11.8,0){};
+  \draw[Medge](q1)--(q2); \draw[Nedge](q2)--(q3); \draw[Medge](q3)--(q4);
+  \node[font=\footnotesize,align=center] at (10,-0.8) {starts and ends with $M$:\\ $M$ is ahead here};
+  \node[font=\footnotesize,anchor=west] at (0,1.5) {\textcolor{hkblue}{\textbf{---}} edges of $M$ \quad \textcolor{hkorange}{\textbf{- - -}} edges of $N$};
+\end{tikzpicture}
+\end{center}
+{\small Edges in only one of them form \textbf{paths and cycles}. $N$ is bigger overall, so some path has more $N$-edges than $M$-edges: it is augmenting for $M$.}
+\end{frame}
+
+% ======================================================================
+\begin{frame}{So the classical algorithm is simple}
+\begin{columns}[c]
+\column{0.5\textwidth}
+\begin{algorithm}[H]
+\Large
+$M\gets\emptyset$\;
+\While{an augmenting path exists}{
+  find one, flip it
+}
+\Return{$M$}
+\end{algorithm}
+\column{0.48\textwidth}
+\begin{itemize}\setlength\itemsep{8pt}
+  \item Each flip: $+1$ edge. At most $n/2$ flips.
+  \item Finding a path: one graph search, $O(m)$.
+\end{itemize}
+\vspace{2mm}
+\begin{alertblock}{Total: $O(mn)$}
+about $\frac n2$ rounds, each costing $m$.
+\end{alertblock}
+\end{columns}
+\end{frame}
+
+% ======================================================================
+\begin{frame}{But look at what we are wasting}
+\begin{columns}[c]
+\column{0.45\textwidth}
+\centering
+\begin{tikzpicture}[scale=1.05]
+  \exnodes \exedges
+  \draw[aug] (xa)--(y1); \draw[aug] (xb)--(y2); \draw[aug] (xc)--(y4);
+  \foreach \v in {xa,xb,xc,xd,xe,y1,y2,y3,y4,y5}{\freering{\v}}
+\end{tikzpicture}
+\column{0.53\textwidth}
+At the start, \emph{every} edge is an augmenting path of length 1.\\[3mm]
+Here $a1,\,b2,\,c4$ don't touch, so we could take \textbf{all three at once}.\\[3mm]
+Yet the classical algorithm does one full search \emph{per} path.
+\begin{alertblock}{Idea}
+In each search, grab as many \textbf{non-overlapping} augmenting paths as we can, and flip them together.
+\end{alertblock}
+\end{columns}
+\end{frame}
+
+% ======================================================================
+\renewcommand{\curspk}{B}
+\begin{frame}{Catch: paths can collide}
+\begin{columns}[c]
+\column{0.45\textwidth}
+\centering
+\begin{tikzpicture}[scale=1.05]
+  \exnodes \exedges
+  \draw[mat] (xa)--(y1); \draw[mat] (xb)--(y2); \draw[mat] (xc)--(y4);
+  \draw[aug] (xd)--(y1); \draw[aug] (xa)--(y3);
+  \draw[Nedge] (xe)--(y1);
+  \freering{xd}\freering{xe}\freering{y3}\freering{y5}
+\end{tikzpicture}
+\column{0.53\textwidth}
+After round 1 the free workers are $d$ and $e$.
+\begin{itemize}\setlength\itemsep{4pt}
+  \item $d\to1\to a\to3$ \quad\textcolor{hkred}{(red)}
+  \item $e\to1\to a\to3$ \quad\textcolor{hkorange}{(orange)}
+\end{itemize}
+Both need job $1$, worker $a$ and job $3$. Only \textbf{one} can win.
+\vspace{2mm}
+\begin{block}{Rules for a batch}
+\begin{enumerate}
+\item Paths must be \textbf{vertex-disjoint}.
+\item Use only \textbf{shortest} augmenting paths (the reason comes soon).
+\end{enumerate}
+\end{block}
+\end{columns}
+\end{frame}
+
+% ======================================================================
+\begin{frame}{Step 1: ripples (BFS) from all free workers}
+\begin{columns}[c]
+\column{0.62\textwidth}
+\centering
+\begin{tikzpicture}[scale=0.95]
+  \layerA
+  \only<2->{\draw[unm] (Ld)--(L1); \draw[unm] (Le)--(L1); \draw[unm] (Ld)--(L2);}
+  \only<2->{\draw[mat] (L1)--(La); \draw[mat] (L2)--(Lb);}
+  \only<3->{\draw[unm] (La)--(L3); \draw[unm] (Lb)--(L5);}
+  \freering{Ld}\freering{Le}
+  \only<3->{\freering{L3}\freering{L5}}
+  \only<4->{\node[font=\small,text=hkred] at (6.6,-1.6) {first free jobs!};}
+\end{tikzpicture}
+\column{0.36\textwidth}
+\begin{enumerate}\setlength\itemsep{7pt}
+  \item<1-> Start with \textbf{all} free workers: layer 0.
+  \item<2-> Go along \textbf{non-matching} edges to jobs. Then follow each job's \textbf{matching} edge back to a worker.
+  \item<3-> Keep rippling until a layer contains a \textbf{free job}, then \textbf{stop}.
+\end{enumerate}
+\onslide<4->{The path length so far: $3$. That is the shortest augmenting path length this round.}
+\end{columns}
+\end{frame}
+
+% ======================================================================
+\begin{frame}{Step 2: pick disjoint paths (DFS), skip dead ends}
+\begin{columns}[c]
+\column{0.62\textwidth}
+\centering
+\begin{tikzpicture}[scale=0.95]
+  \layerA
+  \draw[unm] (Ld)--(L1); \draw[unm] (Le)--(L1); \draw[unm] (Ld)--(L2);
+  \draw[mat] (L1)--(La); \draw[mat] (L2)--(Lb);
+  \draw[unm] (La)--(L3); \draw[unm] (Lb)--(L5);
+  \freering{Ld}\freering{Le}\freering{L3}\freering{L5}
+  \only<2>{\draw[aug] (Ld)--(L1);}
+  \only<3>{\draw[aug] (Ld)--(L1); \draw[aug,line width=3.2pt] (L1)--(La);}
+  \only<4->{\draw[aug] (Ld)--(L1); \draw[aug,line width=3.2pt] (L1)--(La); \draw[aug] (La)--(L3);}
+  \only<5->{\draw[hkred,very thick] ($(Le)+(-0.3,-0.3)$)--($(Le)+(0.3,0.3)$) ($(Le)+(-0.3,0.3)$)--($(Le)+(0.3,-0.3)$);
+            \node[font=\small,text=hkred,align=center] at (3.3,-1.8) {$e$: its only neighbour (job 1) is used.\\ Dead end, never look at it again.};}
+\end{tikzpicture}
+\column{0.36\textwidth}
+\begin{enumerate}\setlength\itemsep{6pt}
+  \item<1-> From a free worker, only step \textbf{one layer further}.
+  \item<4-> Reach a free job: \textbf{flip} the path. Its vertices are now used.
+  \item<5-> Another worker finds everything blocked: mark it \textbf{dead}.
+\end{enumerate}
+\vspace{2mm}
+\onslide<6->{\begin{block}{Why this is fast}
+Every edge is tried \textbf{at most once}: one round costs $O(m+n)$.
+\end{block}}
+\end{columns}
+\end{frame}
+
+% ======================================================================
+\begin{frame}{Putting it together: the whole run on our example}
+\begin{center}
+\begin{tikzpicture}[scale=0.55]
+  \begin{scope}[shift={(0,0)}]
+    \exnodes \exedges
+    \draw[aug] (xa)--(y1); \draw[aug] (xb)--(y2); \draw[aug] (xc)--(y4);
+    \node[font=\small\bfseries] at (1.4,-3.4) {Round 1};
+  \end{scope}
+  \begin{scope}[shift={(5.6,0)}]
+    \exnodes \exedges
+    \draw[mat] (xb)--(y2); \draw[mat] (xc)--(y4);
+    \draw[aug] (xd)--(y1); \draw[aug] (xa)--(y1); \draw[aug] (xa)--(y3);
+    \node[font=\small\bfseries] at (1.4,-3.4) {Round 2};
+  \end{scope}
+  \begin{scope}[shift={(11.2,0)}]
+    \exnodes \exedges
+    \draw[mat] (xa)--(y3); \draw[mat] (xc)--(y4);
+    \draw[aug] (xe)--(y1); \draw[aug] (xd)--(y1); \draw[aug] (xd)--(y2);
+    \draw[aug] (xb)--(y2); \draw[aug] (xb)--(y5);
+    \node[font=\small\bfseries] at (1.4,-3.4) {Round 3};
+  \end{scope}
+\end{tikzpicture}\\[1mm]
+\small\begin{tabular}{lccc}
+\toprule
+ & \textbf{Round 1} & \textbf{Round 2} & \textbf{Round 3}\\
+\midrule
+Shortest path length & 1 & 3 & 5\\
+Paths flipped & 3 & 1 & 1\\
+Matching size & $0\to3$ & $3\to4$ & $4\to5$\\
+\bottomrule
+\end{tabular}
+\end{center}
+\alert{Notice:} the shortest path length goes up every round: $1,\,3,\,5$.
+\end{frame}
+
+% ======================================================================
+\begin{frame}{Why shortest paths? They get used up}
+\begin{columns}[T]
+\column{0.52\textwidth}
+\begin{block}{Fact 1 (Hopcroft--Karp)}
+Flipping a shortest augmenting path never creates a \emph{shorter} one. The shortest length only goes \textbf{up}.
+\end{block}
+\begin{block}{Fact 2}
+Two shortest paths of the \emph{same} length never overlap. So every one of them was valid at the start of the round, and we can take them in any order.
+\end{block}
+\column{0.44\textwidth}
+\textbf{Consequence.} After a round that took a \emph{maximal} set of length-$\ell$ paths, none of length $\ell$ is left: if one were, the search would have taken it.
+\vspace{3mm}
+\begin{alertblock}{So}
+After every round, the shortest augmenting path is \textbf{strictly longer}.
+\end{alertblock}
+\end{columns}
+\vspace{3mm}
+{\small (Proof sketch in the backup slide. The example shows it: $1\to3\to5$.)}
+\end{frame}
+
+% ======================================================================
+\begin{frame}{How many rounds? Only about $\sqrt n$}
+\centering
+\begin{tikzpicture}[x=1.0cm,y=1cm]
+  \fill[hkblue!15] (0,0) rectangle (5,1.2);
+  \fill[hkorange!22] (5,0) rectangle (10,1.2);
+  \node[font=\small] at (2.5,0.6) {first $\sqrt n$ rounds};
+  \node[font=\small] at (7.5,0.6) {then at most $\sqrt n$ more};
+  \draw[decorate,decoration={brace,amplitude=5pt}] (0,1.35)--(10,1.35) node[midway,above=5pt,font=\small\bfseries] {at most $2\sqrt n$ rounds in total};
+\end{tikzpicture}
+\vspace{2mm}
+
+\raggedright
+\textbf{The argument, in plain words.}
+\begin{enumerate}\setlength\itemsep{5pt}
+  \item The path length goes up every round. After $\sqrt n$ rounds, every remaining augmenting path has length $\ge\sqrt n$.
+  \item Disjoint paths of length $\ge\sqrt n$ use $\ge\sqrt n$ vertices each, and there are only $n$ vertices.
+  \item So at most $n/\sqrt n=\sqrt n$ augmentations remain (the best matching differs from ours by that many disjoint paths, as in Berge's picture), and \textbf{each round makes at least one}.
+\end{enumerate}
+\end{frame}
+
+% ======================================================================
+\begin{frame}{The bill}
+\begin{block}{Running time}
+\[
+  \underbrace{O(\sqrt n)}_{\text{rounds}}\ \times\ \underbrace{O(m+n)}_{\text{BFS + DFS per round}}\ =\ O\big((m+n)\sqrt n\big)
+\]
+\end{block}
+\vspace{2mm}
+\centering
+\begin{tabular}{lrr}
+\toprule
+ & \textbf{One path per search} & \textbf{Hopcroft--Karp}\\
+ & $O(mn)$ & $O(m\sqrt n)$\\
+\midrule
+$n=10^4,\ m=10^5$ & $\approx10^9$ & $\approx10^7$\\
+$n=10^6,\ m=10^7$ & $\approx10^{13}$ & $\approx10^{10}$\\
+\bottomrule
+\end{tabular}
+\vspace{3mm}
+
+{\small Dense graphs ($m\approx n^2$): $O(n^{5/2})$, the bound in the paper's title.}
+\end{frame}
+
+% ======================================================================
+\begin{frame}{The whole algorithm}
+\begin{algorithm}[H]
+\Large
+$M\gets\emptyset$\;
+\Repeat{no free job is reached}{
+  \textbf{BFS} from all free workers: build the layers\;
+  \textbf{DFS} from each free worker through the layers:\\
+  \quad flip every path found, skip dead ends\;
+}
+\Return{$M$}
+\end{algorithm}
+\vspace{2mm}
+\begin{columns}[T]
+\column{0.32\textwidth}\centering\textbf{Berge}\\ \small no augmenting path $\Rightarrow$ done
+\column{0.32\textwidth}\centering\textbf{Shortest + disjoint}\\ \small many flips per round
+\column{0.32\textwidth}\centering\textbf{$\sqrt n$ rounds}\\ \small lengths grow, few left
+\end{columns}
+\end{frame}
+
+% ======================================================================
+\begin{frame}{What came after}
+\begin{itemize}\setlength\itemsep{9pt}
+  \item \textbf{Same idea for flows.} A matching is a flow with unit capacities; the rounds are Dinic's \emph{blocking flows}. Even and Tarjan (1975) carried the $O(m\sqrt n)$ bound to unit-capacity networks.
+  \item \textbf{Beyond bipartite.} Micali and Vazirani (1980): $O(m\sqrt n)$ for general graphs.
+  \item \textbf{Faster in theory.} Recent max-flow work (2022) gives almost-linear time, with much heavier machinery.
+  \item \textbf{In practice,} Hopcroft--Karp is still the standard bipartite matching routine: simple and fast.
+\end{itemize}
+\end{frame}
+
+% ======================================================================
+\begin{frame}{Summary}
+\begin{columns}[T]
+\column{0.55\textwidth}
+\begin{enumerate}\setlength\itemsep{8pt}
+  \item A bad matching is repaired by a \textbf{chain of swaps}: an augmenting path.
+  \item \textbf{No augmenting path $\Leftrightarrow$ maximum} (Berge).
+  \item One path per search costs $O(mn)$.
+  \item Take \textbf{many shortest, disjoint paths} per search: BFS gives layers, DFS picks paths.
+  \item Path lengths keep growing $\Rightarrow$ $O(\sqrt n)$ rounds.
+\end{enumerate}
+\column{0.42\textwidth}
+\begin{alertblock}{$O\big((m+n)\sqrt n\big)$}
+the best known in 1973, and still the standard.
+\end{alertblock}
+\vspace{6mm}
+\centering{\Huge\color{hkblue}\textbf{Questions?}}
+\end{columns}
+\end{frame}
+
+% ======================================================================
+\appendix
+\begin{frame}{Backup: why shortest paths never get shorter}
+\textbf{Claim.} If $P$ is a shortest augmenting path for $M$ and $P'$ is augmenting for $M\oplus P$, then $|P'|\ge|P|+|P\cap P'|$.
+\vspace{2mm}
+
+\textbf{Sketch.}
+\begin{enumerate}\setlength\itemsep{3pt}
+  \item $N=M\oplus P\oplus P'$ is a matching with $|N|=|M|+2$.
+  \item By Berge's picture, $M\oplus N=P\oplus P'$ contains \textbf{two disjoint} augmenting paths for $M$, each of length $\ge|P|$ since $P$ is shortest.
+  \item So $|P\oplus P'|\ge2|P|$. But $|P\oplus P'|=|P|+|P'|-2|P\cap P'|$. Rearrange. $\square$
+\end{enumerate}
+\vspace{2mm}
+\textbf{Equal length $\Rightarrow$ disjoint.} If $|P'|=|P|$ they share no edge. A shared \emph{vertex} would force a shared \emph{matching edge} (after flipping, every vertex of $P$ is matched along $P$), so they are vertex-disjoint.
+\vspace{2mm}
+
+\textbf{Exact count (paper, Thm.\,3).} At most $2\lfloor\sqrt s\rfloor+2$ rounds, where $s$ is the maximum matching size.
+\end{frame}
+
+\end{document}
