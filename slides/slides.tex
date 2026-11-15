@@ -30,16 +30,17 @@
   \hspace*{0.2cm}{\color{hkblue!55}\rule{\dimexpr\paperwidth-0.6cm\relax}{0.6pt}}%
 }
 
-\newcommand{\curspk}{A}
+\newcommand{\curspk}{Viswanadha Bhanu Sriharsha}
+\newif\ifbackup \newcommand{\mainframes}{18}  % number of frames before \appendix
 \newcommand{\curpart}{Problem}
 \setbeamertemplate{footline}{%
   \leavevmode\hbox to\paperwidth{%
     \hspace{0.3cm}{\footnotesize\color{hkgrey}Hopcroft--Karp (1973) \textperiodcentered\ \curpart}%
-    \hfill{\footnotesize\color{hkgrey}Presenter \curspk\quad \insertframenumber\,/\,\inserttotalframenumber}\hspace{0.3cm}}%
+    \hfill{\footnotesize\color{hkgrey}\curspk\quad \insertframenumber\ifbackup\else\,/\,\mainframes\fi}\hspace{0.3cm}}%
   \vskip1.2ex}
 
 \title{The Hopcroft--Karp Algorithm}
-\author{Presenter A \and Presenter B}
+\author{Viswanadha Bhanu Sriharsha \and Aman Pathak}
 \date{CS-G526 \textperiodcentered\ November 2026}
 
 \DontPrintSemicolon
@@ -73,6 +74,13 @@
   \node[layerlab] at (6.6,1.7) {$L_3$};
 }
 
+
+% chalk-and-board cue: small tag in the top-right corner of a frame
+\newcommand{\board}[1]{\begin{tikzpicture}[remember picture,overlay]
+  \node[anchor=north east,fill=hkorange!18,draw=hkorange,rounded corners=2pt,font=\scriptsize\bfseries,
+        text=hkorange!55!black,inner sep=3pt] at ([xshift=-0.3cm,yshift=-0.25cm]current page.north east){BOARD: #1};
+\end{tikzpicture}}
+
 \begin{document}
 
 % ======================================================================
@@ -90,7 +98,8 @@
   \vspace{4mm}
   {\Large\color{black!70} Maximum matchings in bipartite graphs\\ in $O\big((m+n)\sqrt n\,\big)$ time\par}
   \vspace{9mm}
-  {\large Presenter A \ \& \ Presenter B\par}
+  {\large \textcolor{hkblue}{Viswanadha Bhanu Sriharsha} \ (2026H1030024G)\par}
+  {\large \textcolor{hkorange}{Aman Pathak} \ (2026PHXP0018G)\par}
   \vspace{1mm}
   {\normalsize CS-G526 \textperiodcentered\ November 2026\par}
   \vspace{8mm}
@@ -104,37 +113,6 @@
   \draw[mat] (xa)--(y3); \draw[mat] (xb)--(y5); \draw[mat] (xc)--(y4);
   \draw[mat] (xd)--(y2); \draw[mat] (xe)--(y1);
 \end{tikzpicture}
-\end{columns}
-\end{frame}
-
-% ======================================================================
-% 2  THE PAPER AND ROADMAP
-% ======================================================================
-\begin{frame}{The paper and our roadmap}
-\begin{columns}[T]
-\column{0.42\textwidth}
-\begin{block}{Hopcroft \& Karp, 1973}
-\emph{``An $n^{5/2}$ algorithm for maximum matchings in bipartite graphs''}\\[2pt]
-SIAM J.\ Comput.\ 2(4), seven pages.
-\end{block}
-\begin{itemize}\setlength\itemsep{5pt}
-  \item \textbf{Claim:} a maximum matching of a bipartite graph with $n$ vertices and $m$ edges in $O\big((m+n)\sqrt n\big)$ steps.
-  \item \textbf{Before:} $O(mn)$.
-  \item $n^{5/2}$ in the title is the dense case $m\sim n^2$.
-\end{itemize}
-\column{0.56\textwidth}
-\textbf{Our lecture follows the paper:}
-\vspace{2mm}
-
-\begin{tabular}{@{}p{0.5cm}p{3.3cm}p{3.4cm}@{}}
-\textcolor{hkblue}{\textbf{I}} & The problem & \small \S1\\[3pt]
-\textcolor{hkblue}{\textbf{II}} & Augmenting paths & \small \S2: Lemma 1, Thm 1, Cor 1 (Berge)\\[3pt]
-\textcolor{hkorange}{\textbf{III}} & Shortest paths and phases & \small \S2: Thm 2, Cor 2--5, Thm 3, \textbf{Algorithm A}\\[3pt]
-\textcolor{hkorange}{\textbf{IV}} & One phase in $O(m+n)$ & \small \S3: layered graph, \textbf{Algorithm B}\\
-\end{tabular}
-\vspace{3mm}
-
-{\small \textcolor{hkblue}{Presenter A}: I--II and start of III. \ \textcolor{hkorange}{Presenter B}: rest of III and IV. In \S2 the paper works with \emph{general} graphs; bipartiteness is used only in \S3.}
 \end{columns}
 \end{frame}
 
@@ -270,7 +248,9 @@ Re-routed, not restarted: matching size $3\to4$.
 % ======================================================================
 % 7  AUGMENTING PATH + LEMMA 1
 % ======================================================================
-\begin{frame}{Augmenting paths and Lemma 1}
+\begin{frame}[t]{Augmenting paths and Lemma 1}
+\board{flip a path, count edges}
+\small
 \begin{block}{Definition}
 A path $P=(v_1,v_2),(v_2,v_3),\dots,(v_{2k-1},v_{2k})$ is \textbf{augmenting} (rel.\ $M$) if both endpoints are \textbf{free} and its edges \textbf{alternate} between $E\setminus M$ and $M$.
 \end{block}
@@ -283,91 +263,50 @@ A path $P=(v_1,v_2),(v_2,v_3),\dots,(v_{2k-1},v_{2k})$ is \textbf{augmenting} (r
   \draw[aug] (c)--node[above,font=\footnotesize]{$\notin M$}(d);
   \freering{a}\freering{d}
 \end{tikzpicture}\\[3mm]
-\raggedright
+\raggedright\vspace{-1mm}
 \begin{block}{Lemma 1}
 If $P$ is augmenting for $M$, then $M\oplus P$ is a matching and $|M\oplus P|=|M|+1$.
 \end{block}
 \vspace{1mm}
 \begin{plain}[Why? In plain words]
-Flip the path: matching edges leave, the others enter. Interior vertices just swap partner; the two free ends get a partner; nobody is double-booked. The path has one \emph{more} outside edge than inside edge, so the size grows by exactly one.
+Interior vertices just swap partner, the two free ends gain one, nobody is double-booked. The path has one more edge outside $M$ than inside, so the size grows by one.
 \end{plain}
-\end{frame}
-
-% ======================================================================
-% 8  THEOREM 1
-% ======================================================================
-\begin{frame}{Theorem 1: comparing two matchings}
-\begin{block}{Theorem 1}
-If $M,N$ are matchings with $|M|=r<|N|=s$, then $M\oplus N$ contains at least $s-r$ \textbf{vertex-disjoint augmenting paths} relative to $M$.
-\end{block}
-\vspace{-1mm}
-\begin{columns}[T]
-\column{0.55\textwidth}
-\footnotesize
-\textbf{Proof.} Look at $H=(V,M\oplus N)$: only edges in exactly one of the two.
-\begin{itemize}\setlength\itemsep{2pt}
-  \item Each vertex has $\le1$ edge of $M$ and $\le1$ of $N$, so degree $\le2$: components are \textbf{isolated vertices, even cycles, or paths}, alternating $M,N$.
-  \item $\delta(C)=|C\cap N|-|C\cap M|\in\{-1,0,1\}$, and $\delta=+1$ iff $C$ is augmenting for $M$.
-  \item $\sum_C\delta(C)=|N|-|M|=s-r$, so at least $s-r$ components have $\delta=+1$. \hfill$\square$
-\end{itemize}
-\column{0.43\textwidth}
-\centering
-\begin{tikzpicture}[scale=0.72,v/.style={circle,fill=black!70,inner sep=1.4pt}]
-  \node[v](c1) at (0,0){}; \node[v](c2) at (1.1,0){}; \node[v](c3) at (1.1,1){}; \node[v](c4) at (0,1){};
-  \draw[Medge](c1)--(c2); \draw[Nedge](c2)--(c3); \draw[Medge](c3)--(c4); \draw[Nedge](c4)--(c1);
-  \node[font=\footnotesize] at (0.55,-0.5) {cycle, $\delta=0$};
-  \node[v](p1) at (3,0.5){}; \node[v](p2) at (4.1,0.5){}; \node[v](p3) at (5.2,0.5){}; \node[v](p4) at (6.3,0.5){};
-  \draw[Nedge](p1)--(p2); \draw[Medge](p2)--(p3); \draw[Nedge](p3)--(p4);
-  \node[font=\footnotesize,align=center] at (4.65,-0.5) {\textbf{augmenting}, $\delta=+1$};
-  \node[v](q1) at (3,-1.6){}; \node[v](q2) at (4.1,-1.6){}; \node[v](q3) at (5.2,-1.6){}; \node[v](q4) at (6.3,-1.6){};
-  \draw[Medge](q1)--(q2); \draw[Nedge](q2)--(q3); \draw[Medge](q3)--(q4);
-  \node[font=\footnotesize] at (4.65,-2.2) {$M$ ahead, $\delta=-1$};
-  \node[font=\footnotesize,anchor=west] at (0,-1.4) {\textcolor{hkblue}{\textbf{---}} $M$};
-  \node[font=\footnotesize,anchor=west] at (0,-1.9) {\textcolor{hkorange}{\textbf{- - -}} $N$};
-\end{tikzpicture}
-\end{columns}
-\vspace{1mm}
-{\small\textbf{In plain words:} a better matching must differ from ours by $N$-heavy chains, and those chains are exactly the repairs we know how to make.}
 \end{frame}
 
 % ======================================================================
 % 9  CORROLLARY 1 + CLASSICAL ALGORITHM
 % ======================================================================
-\begin{frame}{Corollary 1 (Berge) and the classical algorithm}
-\begin{block}{Corollary 1 (Berge)}
-$M$ is a maximum matching $\iff$ there is \textbf{no augmenting path} relative to $M$.
+\begin{frame}[t]{Berge and the $O(mn)$ algorithm}
+\board{proof of Theorem 1}
+\small
+\begin{block}{Theorem 1}
+If $|M|=r<|N|=s$ are matchings, then $M\oplus N$ contains at least $s-r$ vertex-disjoint augmenting paths for $M$.
 \end{block}
-\begin{itemize}\setlength\itemsep{3pt}
-  \item[($\Rightarrow$)] Lemma 1: an augmenting path would give a bigger matching.
-  \item[($\Leftarrow$)] If some $N$ is bigger, Theorem 1 yields an augmenting path.
-\end{itemize}
+\begin{block}{Corollary 1 (Berge)}
+$M$ is maximum $\iff$ there is \textbf{no augmenting path} relative to $M$.\\
+{\small($\Rightarrow$) Lemma 1.\quad($\Leftarrow$) a bigger $N$ would give an augmenting path by Theorem 1.}
+\end{block}
 \begin{columns}[c]
-\column{0.45\textwidth}
-\begin{algorithm}[H]
-\normalsize
-$M\gets\emptyset$\;
-\While{an augmenting path $P$ exists}{
-  $M\gets M\oplus P$
-}
-\Return{$M$}
-\end{algorithm}
-\column{0.52\textwidth}
-\begin{itemize}\setlength\itemsep{4pt}
+\column{0.5\textwidth}
+\textbf{The algorithm.} $M\gets\emptyset$.\\
+\textbf{while} an augmenting path $P$ exists: $M\gets M\oplus P$.\\
+\textbf{return} $M$.
+\column{0.47\textwidth}
+\begin{itemize}\setlength\itemsep{3pt}
   \item $\le n/2$ flips (+1 each).
   \item One search per path: $O(m)$.
+  \item \textcolor{hkred}{\textbf{Total $O(mn)$}: the state of the art before 1973.}
 \end{itemize}
-\begin{alertblock}{$O(mn)$}
-Exactly the previous state of the art.
-\end{alertblock}
 \end{columns}
-{\small \textbf{Where is the waste?} At the start every edge is an augmenting path and $a1,b2,c4$ don't even touch: one search per path is too expensive.}
 \end{frame}
 
 % ======================================================================
 % 10  THE PLAN: SHORTEST AUGMENTING PATHS AND THE SEQUENCE
 % ======================================================================
+\renewcommand{\curspk}{Aman Pathak}
 \renewcommand{\curpart}{III. Shortest paths and phases}
 \begin{frame}{The plan: always use a \emph{shortest} augmenting path}
+\relax{\footnotesize\textbf{Where is the waste?} At the start every edge is an augmenting path, and $a1,b2,c4$ do not even touch: one search per path is too expensive. Can we take many at once?}\par\vspace{1mm}
 \begin{block}{The computation scheme (paper, \S2)}
 $M_0=\emptyset$, \quad $M_{i+1}=M_i\oplus P_i$, \quad where $P_i$ is a \textbf{shortest} augmenting path relative to $M_i$.
 \end{block}
@@ -390,9 +329,7 @@ $M_0=\emptyset$, \quad $M_{i+1}=M_i\oplus P_i$, \quad where $P_i$ is a \textbf{s
   \item Paths of the \textbf{same length} are vertex-disjoint, so they can all be found \emph{together}.
   \item There are only $O(\sqrt n)$ \textbf{distinct} lengths.
 \end{enumerate}
-\begin{alertblock}{Payoff}
-Each length class = one \emph{phase}; $O(\sqrt n)$ phases.
-\end{alertblock}
+\textcolor{hkred}{\textbf{Payoff:} one length class = one \emph{phase}.}
 \end{columns}
 \end{frame}
 
@@ -400,26 +337,22 @@ Each length class = one \emph{phase}; $O(\sqrt n)$ phases.
 % 11  THEOREM 2
 % ======================================================================
 \begin{frame}{Theorem 2: shortest paths never get shorter}
+\board{proof of Theorem 2}
 \begin{block}{Theorem 2}
 Let $P$ be a shortest augmenting path for $M$ and $P'$ an augmenting path for $M\oplus P$. Then $\ |P'|\ \ge\ |P|+|P\cap P'|.$
 \end{block}
 \begin{plain}[In plain words]
 Flipping a shortest path can only push the remaining augmenting paths \emph{further away}, never closer. If $P'$ reuses edges of $P$, it is even longer.
 \end{plain}
-\small\textbf{Proof.}
-\begin{enumerate}\setlength\itemsep{0pt}
-  \item $N=M\oplus P\oplus P'$ is a matching with $|N|=|M|+2$.
-  \item Theorem 1: $M\oplus N=P\oplus P'$ contains two disjoint augmenting paths $P_1,P_2$ for $M$, each of length $\ge|P|$ ($P$ is shortest).
-  \item So $|P\oplus P'|\ge2|P|$. But $|P\oplus P'|=|P|+|P'|-2|P\cap P'|$.
-  \item Hence $|P'|\ge|P|+2|P\cap P'|\ \ge\ |P|+|P\cap P'|$. \hfill$\square$
-\end{enumerate}
+\begin{alertblock}{Why we want it}
+Along the run the lengths $|P_0|,|P_1|,\dots$ never decrease, so they fall into blocks of equal length. Next: paths in one block are disjoint, so a whole block can be found at once.
+\end{alertblock}
 \end{frame}
 
 % ======================================================================
 % 12  COROLLARIES 3 AND 4
 % ======================================================================
-\renewcommand{\curspk}{B}
-\begin{frame}{Corollaries 3 and 4: the run falls into blocks of equal length}
+\begin{frame}{Corollaries 3 and 4: blocks of equal length}
 \begin{columns}[T]
 \column{0.5\textwidth}
 \begin{block}{Corollary 3}
@@ -472,34 +405,10 @@ A leftover path of the same length would, by Corollary 4, be disjoint from all $
 \end{frame}
 
 % ======================================================================
-% 14  COROLLARY 2
-% ======================================================================
-\begin{frame}{Corollary 2: far from optimal means a short path exists}
-\begin{block}{Corollary 2}
-If $|M|=r$ and a maximum matching has size $s>r$, then there is an augmenting path of length at most $2\lfloor r/(s-r)\rfloor+1$.
-\end{block}
-\begin{columns}[T]
-\column{0.54\textwidth}
-\small\textbf{Proof.}
-\begin{enumerate}\setlength\itemsep{2pt}
-  \item Let $N$ be maximum. Theorem 1: $M\oplus N$ has $s-r$ vertex-disjoint augmenting paths for $M$.
-  \item Together they contain at most $|M|=r$ edges of $M$ (disjoint!).
-  \item So one has at most $\lfloor r/(s-r)\rfloor$ edges of $M$.
-  \item An augmenting path with $k$ edges of $M$ has $2k+1$ edges. \hfill$\square$
-\end{enumerate}
-\column{0.44\textwidth}
-\small
-\begin{plain}
-Many improvements are still missing ($s-r$ large), and they must share the little matching we have. So some improvement is cheap. Only when $M$ is \emph{nearly} maximum can every augmenting path be long.
-\end{plain}
-{\footnotesize Example: $r=3$, $s=5$: length $\le3$; phase 2 has length 3.}
-\end{columns}
-\end{frame}
-
-% ======================================================================
 % 15  THEOREM 3 / COR 5
 % ======================================================================
 \begin{frame}{Theorem 3 and Corollary 5: $O(\sqrt n)$ phases}
+\board{the split at $s-\sqrt s$}
 \begin{block}{Theorem 3 / Corollary 5}
 If a maximum matching has size $s$, the lengths $|P_0|,|P_1|,\dots$ take at most $2\lfloor\sqrt s\rfloor+2$ distinct values: Algorithm A needs at most $2\lfloor\sqrt s\rfloor+2$ phases.
 \end{block}
@@ -670,6 +579,133 @@ A depth-first walk from $s$. Every edge we look at is \textbf{deleted} at once: 
 \end{frame}
 
 % ======================================================================
+% 22  PUTTING IT TOGETHER
+% ======================================================================
+\begin{frame}{Putting it together: the Hopcroft--Karp bound}
+\begin{block}{Running time}
+\[
+  \underbrace{2\lfloor\sqrt s\rfloor+2}_{\text{phases (Cor.\,5)}}\ \times\ \underbrace{O(m+n)}_{\text{one phase (BFS + Algorithm B)}}\ =\ O\big((m+n)\sqrt n\big)
+\]
+\end{block}
+\begin{columns}[T]
+\column{0.5\textwidth}
+\begin{itemize}\setlength\itemsep{5pt}
+  \item No isolated vertices: $m\ge n/2$, so this is $O(m\sqrt n)$.
+  \item Dense case $m\sim n^2$: $O(n^{5/2})$, the title of the paper.
+\end{itemize}
+\column{0.48\textwidth}
+\begin{tabular}{lrr}
+\toprule
+ & $O(mn)$ & $O(m\sqrt n)$\\
+\midrule
+$n=10^4,\ m=10^5$ & $10^9$ & $10^7$\\
+$n=10^6,\ m=10^7$ & $10^{13}$ & $10^{10}$\\
+\bottomrule
+\end{tabular}
+\end{columns}
+\vspace{2mm}
+\begin{alertblock}{The three ideas of Hopcroft--Karp}
+\textbf{(1)} Berge: augmenting paths are all we need.\quad
+\textbf{(2)} Shortest paths: lengths never decrease, so equal-length paths are disjoint and form phases.\quad
+\textbf{(3)} Counting: $O(\sqrt n)$ phases, each $O(m+n)$ by BFS layering and DFS with deletion.
+\end{alertblock}
+\end{frame}
+
+% ======================================================================
+% 23  BEYOND + SUMMARY
+% ======================================================================
+\begin{frame}{After the paper, and a summary}
+\begin{columns}[T]
+\column{0.5\textwidth}
+\textbf{What came after}
+\begin{itemize}\setlength\itemsep{5pt}\small
+  \item Same idea for flows: phases = Dinic's blocking flows; Even--Tarjan (1975): $O(m\sqrt n)$ on unit-capacity networks.
+  \item The paper hoped for the non-bipartite case: Micali--Vazirani (1980), $O(m\sqrt n)$.
+  \item Almost-linear max-flow (2022), heavy machinery.
+  \item Still the standard bipartite matching routine.
+\end{itemize}
+\column{0.48\textwidth}
+\textbf{Summary}
+\begin{enumerate}\setlength\itemsep{4pt}\small
+  \item A bad matching is repaired by an augmenting path (Lemma 1); none left $\Leftrightarrow$ maximum (Berge).
+  \item One path per search: $O(mn)$.
+  \item Use \emph{shortest} paths (Thm 2): batches of disjoint paths = phases (Cor 3, 4, Alg.\ A).
+  \item $O(\sqrt n)$ phases (Cor 2, Thm 3).
+  \item One phase in $O(m+n)$ (layered graph, Alg.\ B).
+\end{enumerate}
+\end{columns}
+\vspace{3mm}
+\centering{\Huge\color{hkblue}\textbf{Questions?}}
+\end{frame}
+
+% ======================================================================
+\appendix
+\renewcommand{\curpart}{Backup}
+\renewcommand{\curspk}{}\backuptrue
+
+% ======================================================================
+% 8  THEOREM 1
+% ======================================================================
+\begin{frame}{Theorem 1: comparing two matchings}
+\begin{block}{Theorem 1}
+If $M,N$ are matchings with $|M|=r<|N|=s$, then $M\oplus N$ contains at least $s-r$ \textbf{vertex-disjoint augmenting paths} relative to $M$.
+\end{block}
+\vspace{-1mm}
+\begin{columns}[T]
+\column{0.55\textwidth}
+\footnotesize
+\textbf{Proof.} Look at $H=(V,M\oplus N)$: only edges in exactly one of the two.
+\begin{itemize}\setlength\itemsep{2pt}
+  \item Each vertex has $\le1$ edge of $M$ and $\le1$ of $N$, so degree $\le2$: components are \textbf{isolated vertices, even cycles, or paths}, alternating $M,N$.
+  \item $\delta(C)=|C\cap N|-|C\cap M|\in\{-1,0,1\}$, and $\delta=+1$ iff $C$ is augmenting for $M$.
+  \item $\sum_C\delta(C)=|N|-|M|=s-r$, so at least $s-r$ components have $\delta=+1$. \hfill$\square$
+\end{itemize}
+\column{0.43\textwidth}
+\centering
+\begin{tikzpicture}[scale=0.72,v/.style={circle,fill=black!70,inner sep=1.4pt}]
+  \node[v](c1) at (0,0){}; \node[v](c2) at (1.1,0){}; \node[v](c3) at (1.1,1){}; \node[v](c4) at (0,1){};
+  \draw[Medge](c1)--(c2); \draw[Nedge](c2)--(c3); \draw[Medge](c3)--(c4); \draw[Nedge](c4)--(c1);
+  \node[font=\footnotesize] at (0.55,-0.5) {cycle, $\delta=0$};
+  \node[v](p1) at (3,0.5){}; \node[v](p2) at (4.1,0.5){}; \node[v](p3) at (5.2,0.5){}; \node[v](p4) at (6.3,0.5){};
+  \draw[Nedge](p1)--(p2); \draw[Medge](p2)--(p3); \draw[Nedge](p3)--(p4);
+  \node[font=\footnotesize,align=center] at (4.65,-0.5) {\textbf{augmenting}, $\delta=+1$};
+  \node[v](q1) at (3,-1.6){}; \node[v](q2) at (4.1,-1.6){}; \node[v](q3) at (5.2,-1.6){}; \node[v](q4) at (6.3,-1.6){};
+  \draw[Medge](q1)--(q2); \draw[Nedge](q2)--(q3); \draw[Medge](q3)--(q4);
+  \node[font=\footnotesize] at (4.65,-2.2) {$M$ ahead, $\delta=-1$};
+  \node[font=\footnotesize,anchor=west] at (0,-1.4) {\textcolor{hkblue}{\textbf{---}} $M$};
+  \node[font=\footnotesize,anchor=west] at (0,-1.9) {\textcolor{hkorange}{\textbf{- - -}} $N$};
+\end{tikzpicture}
+\end{columns}
+\vspace{1mm}
+{\small\textbf{In plain words:} a better matching must differ from ours by $N$-heavy chains, and those chains are exactly the repairs we know how to make.}
+\end{frame}
+
+% ======================================================================
+% 14  COROLLARY 2
+% ======================================================================
+\begin{frame}{Corollary 2: far from optimal means a short path exists}
+\begin{block}{Corollary 2}
+If $|M|=r$ and a maximum matching has size $s>r$, then there is an augmenting path of length at most $2\lfloor r/(s-r)\rfloor+1$.
+\end{block}
+\begin{columns}[T]
+\column{0.54\textwidth}
+\small\textbf{Proof.}
+\begin{enumerate}\setlength\itemsep{2pt}
+  \item Let $N$ be maximum. Theorem 1: $M\oplus N$ has $s-r$ vertex-disjoint augmenting paths for $M$.
+  \item Together they contain at most $|M|=r$ edges of $M$ (disjoint!).
+  \item So one has at most $\lfloor r/(s-r)\rfloor$ edges of $M$.
+  \item An augmenting path with $k$ edges of $M$ has $2k+1$ edges. \hfill$\square$
+\end{enumerate}
+\column{0.44\textwidth}
+\small
+\begin{plain}
+Many improvements are still missing ($s-r$ large), and they must share the little matching we have. So some improvement is cheap. Only when $M$ is \emph{nearly} maximum can every augmenting path be long.
+\end{plain}
+{\footnotesize Example: $r=3$, $s=5$: length $\le3$; phase 2 has length 3.}
+\end{columns}
+\end{frame}
+
+% ======================================================================
 % 20  CORRECTNESS + COMPLEXITY OF ALGORITHM B
 % ======================================================================
 \begin{frame}{Why Algorithm B works, and what it costs}
@@ -740,70 +776,25 @@ $|M|$ & $0\to3$ & $3\to4$ & $4\to5$\\
 {\small\alert{As proved:} $\ell$ strictly increases ($1<3<5$); phases: $3\le2\lfloor\sqrt5\rfloor+2$.}
 \end{frame}
 
-% ======================================================================
-% 22  PUTTING IT TOGETHER
-% ======================================================================
-\begin{frame}{Putting it together: the Hopcroft--Karp bound}
-\begin{block}{Running time}
-\[
-  \underbrace{2\lfloor\sqrt s\rfloor+2}_{\text{phases (Cor.\,5)}}\ \times\ \underbrace{O(m+n)}_{\text{one phase (BFS + Algorithm B)}}\ =\ O\big((m+n)\sqrt n\big)
-\]
+
+\begin{frame}{Backup: proof of Theorem 2}
+\begin{block}{Theorem 2}
+Let $P$ be a shortest augmenting path for $M$ and $P'$ an augmenting path for $M\oplus P$. Then $\ |P'|\ \ge\ |P|+|P\cap P'|.$
 \end{block}
-\begin{columns}[T]
-\column{0.5\textwidth}
-\begin{itemize}\setlength\itemsep{5pt}
-  \item No isolated vertices: $m\ge n/2$, so this is $O(m\sqrt n)$.
-  \item Dense case $m\sim n^2$: $O(n^{5/2})$, the title of the paper.
-\end{itemize}
-\column{0.48\textwidth}
-\begin{tabular}{lrr}
-\toprule
- & $O(mn)$ & $O(m\sqrt n)$\\
-\midrule
-$n=10^4,\ m=10^5$ & $10^9$ & $10^7$\\
-$n=10^6,\ m=10^7$ & $10^{13}$ & $10^{10}$\\
-\bottomrule
-\end{tabular}
-\end{columns}
-\vspace{2mm}
-\begin{alertblock}{The three ideas of Hopcroft--Karp}
-\textbf{(1)} Berge: augmenting paths are all we need.\quad
-\textbf{(2)} Shortest paths: lengths never decrease, so equal-length paths are disjoint and form phases.\quad
-\textbf{(3)} Counting: $O(\sqrt n)$ phases, each $O(m+n)$ by BFS layering and DFS with deletion.
-\end{alertblock}
-\end{frame}
-
-% ======================================================================
-% 23  BEYOND + SUMMARY
-% ======================================================================
-\begin{frame}{After the paper, and a summary}
-\begin{columns}[T]
-\column{0.5\textwidth}
-\textbf{What came after}
-\begin{itemize}\setlength\itemsep{5pt}\small
-  \item Same idea for flows: phases = Dinic's blocking flows; Even--Tarjan (1975): $O(m\sqrt n)$ on unit-capacity networks.
-  \item The paper hoped for the non-bipartite case: Micali--Vazirani (1980), $O(m\sqrt n)$.
-  \item Almost-linear max-flow (2022), heavy machinery.
-  \item Still the standard bipartite matching routine.
-\end{itemize}
-\column{0.48\textwidth}
-\textbf{Summary}
-\begin{enumerate}\setlength\itemsep{4pt}\small
-  \item A bad matching is repaired by an augmenting path (Lemma 1); none left $\Leftrightarrow$ maximum (Berge).
-  \item One path per search: $O(mn)$.
-  \item Use \emph{shortest} paths (Thm 2): batches of disjoint paths = phases (Cor 3, 4, Alg.\ A).
-  \item $O(\sqrt n)$ phases (Cor 2, Thm 3).
-  \item One phase in $O(m+n)$ (layered graph, Alg.\ B).
+\begin{plain}[In plain words]
+Flipping a shortest path can only push the remaining augmenting paths \emph{further away}, never closer. If $P'$ reuses edges of $P$, it is even longer.
+\end{plain}
+\small\textbf{Proof.}
+\begin{enumerate}\setlength\itemsep{0pt}
+  \item $N=M\oplus P\oplus P'$ is a matching with $|N|=|M|+2$.
+  \item Theorem 1: $M\oplus N=P\oplus P'$ contains two disjoint augmenting paths $P_1,P_2$ for $M$, each of length $\ge|P|$ ($P$ is shortest).
+  \item So $|P\oplus P'|\ge2|P|$. But $|P\oplus P'|=|P|+|P'|-2|P\cap P'|$.
+  \item Hence $|P'|\ge|P|+2|P\cap P'|\ \ge\ |P|+|P\cap P'|$. \hfill$\square$
 \end{enumerate}
-\end{columns}
-\vspace{3mm}
-\centering{\Huge\color{hkblue}\textbf{Questions?}}
 \end{frame}
 
-% ======================================================================
-\appendix
-\renewcommand{\curpart}{Backup}
 \begin{frame}{Backup: proof of Corollary 4}
+
 \textbf{Claim.} If $|P_i|=|P_j|$ then $P_i,P_j$ are vertex-disjoint.\\[2mm]
 \textbf{Proof.} Suppose not. By Corollary 3 all lengths between $i$ and $j$ are equal. Pick a non-disjoint pair $P_k,P_l$ with $l-k$ \emph{minimal}; then every $P_m$ with $k<m<l$ is disjoint from both.
 \begin{itemize}\setlength\itemsep{3pt}
