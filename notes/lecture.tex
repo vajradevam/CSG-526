@@ -9,6 +9,7 @@
 \usepackage[most]{tcolorbox}
 \usepackage{needspace}
 \usepackage{capt-of}
+\usetikzlibrary{patterns}
 \usepackage{hyperref}
 \input{../common/hkmacros.tex}
 
@@ -180,7 +181,22 @@ If $P$ is an augmenting path for $M$, then $M\oplus P$ is a matching, and it has
 Walk along $P$. A vertex in the middle of the path has exactly one matching edge before the flip, and that edge is on $P$ (because the path alternates). After the flip that edge is gone and the other $P$-edge at the vertex is in. So it still has exactly one matching edge. The two ends were free; each gets exactly one new matching edge. Everything off the path is untouched. So $M\oplus P$ is a matching. Now count: if $P$ has $k$ edges in $M$, it has $k+1$ outside $M$. We remove $k$ and add $k+1$. One more.
 \end{pf}
 
-\begin{board}Draw $d-1-a-3$: outer edges dashed (not in $M$), middle edge thick (in $M$), ring the free ends $d$ and $3$. Write ``before: 1 edge''. Redraw with dashed and thick swapped, write ``after: 2 edges''. Say it out loud: the people in the middle swap partners, the two ends each gain one, and nobody ends up double-booked.\end{board}
+\begin{board}Draw $d-1-a-3$ (sketch below): outer edges dashed (not in $M$), middle edge thick (in $M$), ring the free ends $d$ and $3$. Write ``before: 1 edge''. Redraw with dashed and thick swapped, write ``after: 2 edges''. Say it out loud: the people in the middle swap partners, the two ends each gain one, and nobody ends up double-booked.
+\begin{center}
+\begin{tikzpicture}[scale=0.8]
+  \begin{scope}[on background layer]
+  \draw[dashed,thick] (0,0)--(2,0); \draw[line width=2.4pt] (2,0)--(4,0); \draw[dashed,thick] (4,0)--(6,0);
+  \draw[line width=2.4pt] (0,-1.4)--(2,-1.4); \draw[dashed,thick] (2,-1.4)--(4,-1.4); \draw[line width=2.4pt] (4,-1.4)--(6,-1.4);
+  \end{scope}
+  \node[boy] at (0,0) {$d$}; \node[girl] at (2,0) {$1$}; \node[boy] at (4,0) {$a$}; \node[girl] at (6,0) {$3$};
+  \draw[freev] (0,0) circle (4.4mm); \draw[freev] (6,0) circle (4.4mm);
+  \node[anchor=west,font=\footnotesize] at (6.8,0) {before: 1 edge in $M$};
+  \node[boy] at (0,-1.4) {$d$}; \node[girl] at (2,-1.4) {$1$}; \node[boy] at (4,-1.4) {$a$}; \node[girl] at (6,-1.4) {$3$};
+  \node[anchor=west,font=\footnotesize] at (6.8,-1.4) {after: 2 edges in $M$};
+  \node[font=\footnotesize,text=hkgrey] at (3,0.8) {thick = in $M$,\ dashed = not in $M$,\ green ring = free};
+\end{tikzpicture}
+\end{center}
+\end{board}
 
 \begin{key}Flipping an augmenting path repairs a matching and makes it one edge bigger.\end{key}
 
@@ -210,7 +226,25 @@ Take one of them and look at an endpoint $v$. It sits at the end of an $N$-edge 
 \captionof{figure}{$M=\{a1,b2,c4\}$ (blue, solid) and the best matching $N=\{a3,e1,d2,b5,c4\}$ (orange, dashed). Left: both together. Right: $c4$ is in both, so it drops out, and what's left of $M\oplus N$ is two paths, $e\,1\,a\,3$ and $d\,2\,b\,5$. Here $s-r=5-3=2$: exactly the two disjoint augmenting paths the theorem promises.}\label{fig:thm1}
 \end{center}
 
-\begin{board}Two matchings on a small graph, $M$ solid and $N$ dashed. Erase what they share. Say: every vertex has at most one edge of each kind, so what's left is alternating paths and cycles. For each piece write $\delta=\#N-\#M$, and the total is $s-r$. So at least $s-r$ pieces have $\delta=+1$, and their ends are free for $M$.\end{board}
+\begin{board}Draw two matchings on a small graph (sketch below), $M$ solid and $N$ dashed. Erase what they share. Say: every vertex has at most one edge of each kind, so what's left is alternating paths and cycles. For each piece write $\delta=\#N-\#M$, and the total is $s-r$. So at least $s-r$ pieces have $\delta=+1$, and their ends are free for $M$.
+\begin{center}
+\begin{tikzpicture}[scale=0.8]
+  \begin{scope}[on background layer]
+  \draw[Nedge] (0,0)--(2,0); \draw[Medge] (2,0)--(4,0); \draw[Nedge] (4,0)--(6,0);
+  \draw[Nedge] (0,-1.3)--(2,-1.3); \draw[Medge] (2,-1.3)--(4,-1.3); \draw[Nedge] (4,-1.3)--(6,-1.3);
+  \draw[Medge] (0,-2.6)--(1.6,-2.6); \draw[Nedge] (1.6,-2.6)--(1.6,-3.9); \draw[Medge] (1.6,-3.9)--(0,-3.9); \draw[Nedge] (0,-3.9)--(0,-2.6);
+  \end{scope}
+  \node[boy] at (0,0) {$e$}; \node[girl] at (2,0) {$1$}; \node[boy] at (4,0) {$a$}; \node[girl] at (6,0) {$3$};
+  \node[anchor=west,font=\footnotesize] at (6.8,0) {$N\,M\,N$:\ $\delta=+1$, augmenting};
+  \node[boy] at (0,-1.3) {$d$}; \node[girl] at (2,-1.3) {$2$}; \node[boy] at (4,-1.3) {$b$}; \node[girl] at (6,-1.3) {$5$};
+  \node[anchor=west,font=\footnotesize] at (6.8,-1.3) {$N\,M\,N$:\ $\delta=+1$, augmenting};
+  \node[boy] at (0,-2.6) {$x$}; \node[girl] at (1.6,-2.6) {$y$}; \node[boy] at (1.6,-3.9) {$z$}; \node[girl] at (0,-3.9) {$w$};
+  \node[anchor=west,font=\footnotesize] at (2.6,-3.25) {a cycle: $\delta=0$};
+  \node[anchor=west,font=\footnotesize,align=left] at (6.8,-2.6) {sum of all $\delta$ $=|N|-|M|=s-r$\\ so $\ge s-r$ pieces have $\delta=+1$};
+  \node[font=\footnotesize,text=hkgrey,anchor=west] at (6.8,-3.9) {blue solid $=M$,\ orange dashed $=N$};
+\end{tikzpicture}
+\end{center}
+\end{board}
 
 \begin{thm}{Corollary 1 (Berge)}
 A matching $M$ is maximum if and only if there is no augmenting path for $M$.
@@ -282,7 +316,23 @@ so $|P\oplus P'|\ge 2|P|$. Counting the other way, $|P\oplus P'|=|P|+|P'|-2|P\ca
 (The paper states the weaker version; the proof actually gives the factor 2.)
 \end{pf}
 
-\begin{board}Write $M\xrightarrow{\ \oplus P\ }M\oplus P\xrightarrow{\ \oplus P'\ }N$ and $|N|=|M|+2$. Theorem 1 on $M,N$: two disjoint augmenting paths for $M$ inside $P\oplus P'$, each at least $|P|$, so $|P\oplus P'|\ge2|P|$. Then count $|P\oplus P'|=|P|+|P'|-2|P\cap P'|$. Read off the answer.\end{board}
+\begin{board}Write $M\xrightarrow{\ \oplus P\ }M\oplus P\xrightarrow{\ \oplus P'\ }N$ and $|N|=|M|+2$. Theorem 1 on $M,N$: two disjoint augmenting paths for $M$ inside $P\oplus P'$, each at least $|P|$, so $|P\oplus P'|\ge2|P|$. Then count $|P\oplus P'|=|P|+|P'|-2|P\cap P'|$. Read off the answer.
+\begin{center}
+\begin{tikzpicture}[x=0.85cm,y=1cm]
+  \node[anchor=east,font=\footnotesize] at (-0.2,0.2) {$P$};
+  \fill[hkblue!35] (0,0) rectangle (4,0.4);
+  \node[anchor=east,font=\footnotesize] at (-0.2,-0.5) {$P'$};
+  \fill[hkorange!35] (2.5,-0.7) rectangle (6.5,-0.3);
+  \fill[pattern=north east lines,pattern color=black!60] (2.5,0) rectangle (4,0.4);
+  \fill[pattern=north east lines,pattern color=black!60] (2.5,-0.7) rectangle (4,-0.3);
+  \node[font=\scriptsize] at (3.25,0.65) {$P\cap P'$};
+  \draw[decorate,decoration={brace,mirror,amplitude=3pt}] (0,-0.9)--(2.5,-0.9) node[midway,below=3pt,font=\scriptsize]{part of $P\oplus P'$};
+  \draw[decorate,decoration={brace,mirror,amplitude=3pt}] (4,-0.9)--(6.5,-0.9) node[midway,below=3pt,font=\scriptsize]{part of $P\oplus P'$};
+  \node[anchor=west,font=\footnotesize,align=left] at (7.2,0) {$|P\oplus P'|=|P|+|P'|-2|P\cap P'|$\\[2pt] two disjoint augmenting paths for $M$ live in $P\oplus P'$,\\ each $\ge|P|$, so $|P\oplus P'|\ge2|P|$};
+  \node[font=\footnotesize] at (3.25,-2.0) {$M\ \xrightarrow{\ \oplus P\ }\ M\oplus P\ \xrightarrow{\ \oplus P'\ }\ N,\qquad |N|=|M|+2$};
+\end{tikzpicture}
+\end{center}
+\end{board}
 
 \begin{key}Along the run, path lengths never go down. Next: equal lengths mean disjoint.\end{key}
 
@@ -344,19 +394,19 @@ By Corollary 2 the shortest augmenting path has length at most $2\lfloor\sqrt s\
 Altogether at most $\lfloor\sqrt s\rfloor+1+\lceil\sqrt s\rceil\le2\lfloor\sqrt s\rfloor+2$ different lengths. Since the length strictly grows from phase to phase, every phase uses a new value, so the number of phases is at most the number of values (Corollary 5).
 \end{pf}
 
+\begin{board}Draw the line from $0$ to $s$ with a mark at $s-\sqrt s$ (sketch below). Left of the mark: more than $\sqrt s$ edges are missing, so Corollary 2 says paths are short, at most $2\sqrt s+1$, and odd and increasing: about $\sqrt s$ phases. Right of the mark: only $\sqrt s$ edges are missing, and each phase gains one: about $\sqrt s$ phases. Total about $2\sqrt s$. Add the one-line reason for Corollary 2: $s-r$ disjoint paths share only $r$ matching edges, so one of them has at most $r/(s-r)$.
 \begin{center}
 \begin{tikzpicture}[x=1cm,y=1cm]
-  \fill[hkblue!15] (0,0) rectangle (6,0.9);
-  \fill[hkorange!22] (6,0) rectangle (10,0.9);
+  \fill[hkblue!15] (0,0) rectangle (6,0.8);
+  \fill[hkorange!22] (6,0) rectangle (10,0.8);
   \draw[thick] (0,0)--(10,0);
-  \foreach \x/\t in {0/{0},6/{$r=s-\sqrt s$},10/{$s$}} {\draw (\x,-0.1)--(\x,0.1); \node[font=\footnotesize,below] at (\x,-0.1) {\t};}
-  \node[font=\footnotesize,align=center,anchor=south] at (3,1.0) {\textbf{early:} lengths short, odd,\\ increasing, $\le2\sqrt s+1$\\ $\Rightarrow$ $\le\sqrt s+1$ phases};
-  \node[font=\footnotesize,align=center,anchor=south] at (8,1.0) {\textbf{late:} only $\sqrt s$ edges\\ missing, each phase gains $\ge1$\\ $\Rightarrow$ $\le\sqrt s$ phases};
+  \foreach \x/\t in {0/{0},6/{$s-\sqrt s$},10/{$s$}} {\draw (\x,-0.1)--(\x,0.1); \node[font=\footnotesize,below] at (\x,-0.1) {\t};}
+  \node[font=\footnotesize,align=center] at (3,0.4) {$\ell\le2\sqrt s+1$, odd, increasing\\ about $\sqrt s$ phases};
+  \node[font=\footnotesize,align=center] at (8,0.4) {about $\sqrt s$ edges left\\ about $\sqrt s$ phases};
+  \node[font=\footnotesize] at (5,-0.9) {$|M|$ grows from left to right};
 \end{tikzpicture}
-\captionof{figure}{Where the $2\sqrt s+2$ comes from.}\label{fig:split}
 \end{center}
-
-\begin{board}Draw the line from $0$ to $s$ with a mark at $s-\sqrt s$ (Figure~\ref{fig:split}). Left of the mark: more than $\sqrt s$ edges are missing, so Corollary 2 says paths are short, at most $2\sqrt s+1$, and odd and increasing: about $\sqrt s$ phases. Right of the mark: only $\sqrt s$ edges are missing, and each phase gains one: about $\sqrt s$ phases. Total about $2\sqrt s$. Add the one-line reason for Corollary 2: $s-r$ disjoint paths share only $r$ matching edges, so one of them has at most $r/(s-r)$.\end{board}
+\end{board}
 
 \begin{ask}``Why split at $\sqrt n$ and not somewhere else?'' If we split when $t$ edges are missing, the late part has $t$ phases and the early part about $n/t$. The sum $t+n/t$ is smallest at $t=\sqrt n$.\end{ask}
 
