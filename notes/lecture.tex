@@ -31,7 +31,7 @@
   coltitle=white,attach boxed title to top left={yshift=-2mm,xshift=2mm},
   boxed title style={colback=hkorange,arc=2pt,boxrule=0pt,top=1pt,bottom=1pt}}
 \newtcolorbox{key}{enhanced,colback=hkred!6,colframe=hkred,boxrule=0.5pt,arc=2pt,
-  left=6pt,right=6pt,top=5pt,bottom=4pt,title={\small\bfseries Takeaway},
+  left=6pt,right=6pt,top=5pt,bottom=4pt,title={\small\bfseries Leave them with},
   coltitle=white,attach boxed title to top left={yshift=-2mm,xshift=2mm},
   boxed title style={colback=hkred,arc=2pt,boxrule=0pt,top=1pt,bottom=1pt}}
 
@@ -84,40 +84,42 @@
 
 % =====================================================================
 \section*{How to use these notes}
-These notes are the lecture itself, written out in full: every definition, every figure, every proof. The slides are the support: they show the statements and pictures while we talk and write on the board. You can read these notes cold and learn the algorithm; you can also teach from them.
+These notes are the lecture, written out the way we'd say it. The slides are deliberately light: a picture, a few words, and a statement. They are there so the class has something to look at. The explaining happens at the board and in our voices, and everything we say is in here, proofs included. If you missed the lecture, you can read these notes and learn the algorithm from scratch.
 
-\textbf{Source.} J.\,E.\ Hopcroft and R.\,M.\ Karp, \emph{An $n^{5/2}$ algorithm for maximum matchings in bipartite graphs}, SIAM J.\ Comput.\ 2(4):225--231, 1973. The names Lemma 1, Theorems 1--3, Corollaries 1--5, Algorithm A and Algorithm B are the paper's own, and they are the names on the slides.
+\textbf{Source.} J.\,E.\ Hopcroft and R.\,M.\ Karp, \emph{An $n^{5/2}$ algorithm for maximum matchings in bipartite graphs}, SIAM J.\ Comput.\ 2(4):225--231, 1973. The names Lemma 1, Theorems 1--3, Corollaries 1--5, Algorithm A and Algorithm B are the paper's, and they are the names on the slides.
 
-\textbf{Conventions.} $G=(X\cup Y,E)$ is a bipartite graph, $n=|X|+|Y|$ and $m=|E|$. We assume no vertex is isolated, so $m\ge n/2$. We call $X$ the \emph{boys} (workers) and $Y$ the \emph{girls} (jobs), as the paper does. $|P|$ is the number of \emph{edges} of a path $P$. $A\oplus B$ is the symmetric difference of two edge sets: the edges that are in exactly one of them.
+\textbf{Notation.} $G=(X\cup Y,E)$ is bipartite, $n=|X|+|Y|$, $m=|E|$, and we assume no vertex is isolated, so $m\ge n/2$. Like the paper we call $X$ the \emph{boys} (workers) and $Y$ the \emph{girls} (jobs). $|P|$ is the number of edges of a path $P$. $A\oplus B$ is the symmetric difference: the edges that are in exactly one of the two sets.
 
-\textbf{Format.} Eighteen minutes plus questions, in two halves.
+\textbf{Who covers what.} Eighteen minutes, then questions.
 \begin{center}
 \begin{tabular}{llcp{9.3cm}}
 \toprule
-\textbf{Who} & \textbf{Slides} & \textbf{Min.} & \textbf{Notes sections}\\
+\textbf{Who} & \textbf{Slides} & \textbf{Min.} & \textbf{Sections}\\
 \midrule
-Sriharsha & 1--7  & 8.0  & 1 the problem, 2 greedy, 3 the repair, 4 augmenting paths and Lemma 1, 5 Theorem 1 and Berge's theorem with the $O(mn)$ algorithm\\
-Aman & 8--18 & 9.25 & 6 the idea, 7 Theorem 2, 8 Corollaries 3, 4 and Algorithm A, 9 $O(\sqrt n)$ phases, 10 one phase in $O(m+n)$, 11 the bound and the whole run, 12 summary\\
+Sriharsha & 1--7  & 8.0  & 1 the problem, 2 greedy, 3 the repair, 4 augmenting paths and Lemma 1, 5 Theorem 1, Berge, and the $O(mn)$ algorithm\\
+Aman & 8--18 & 9.25 & 6 the idea, 7 Theorem 2, 8 Corollaries 3, 4 and Algorithm A, 9 the number of phases, 10 one phase in linear time, 11 the bound and the whole run, 12 summary\\
 \bottomrule
 \end{tabular}
 \end{center}
-Each section starts with a tag giving the slides and the time. Boxes: \textbf{On the board} is what to draw or write (the proofs); \textbf{Ask the class} is a question to put to the room; \textbf{Takeaway} is the one sentence to leave behind. \textbf{If time runs short:} shorten the definitions in section 1 to one sentence, skip the walkthrough clicks in section 10, state Corollary 4 without its proof, and drop the closing remarks of section 12.
+Every section starts with a small tag: which slides, how long. The boxes: \textbf{On the board} is what to draw and write (this is where the proofs live); \textbf{Ask the class} is a question for the room; \textbf{Leave them with} is the one sentence we want them to remember. \textbf{If we're running late:} one sentence for the definitions in section 1, skip the clicks of the walkthrough in section 10, state Corollary 4 without proving it, and cut the closing remarks of section 12.
 
-\textbf{The running example} appears in every figure. Workers $a,b,c,d,e$, jobs $1,\dots,5$, and edges
+\textbf{The running example.} It's in every figure. Five workers $a,b,c,d,e$, five jobs $1,\dots,5$, and the edges
 \[
 a\!:\!1,3\qquad b\!:\!2,5\qquad c\!:\!4,5\qquad d\!:\!1,2\qquad e\!:\!1 .
 \]
-Its maximum matching has size $5$. Spoiler for what the algorithm will do: phase 1 takes $a1,b2,c4$ (paths of length 1), phase 2 takes $d1a3$ (length 3), phase 3 takes $e1d2b5$ (length 5). Draw the graph on the board before class, with the left column in the order $a,e,d,b,c$ and the right column $3,1,2,5,4$, exactly as in the figures; then no edges cross.
+The best matching has 5 edges. Here is a peek at what the algorithm does: phase 1 takes $a1,b2,c4$ (paths of length 1), phase 2 takes $d1a3$ (length 3), phase 3 takes $e1d2b5$ (length 5). Before class, draw this graph on the board with the left column in the order $a,e,d,b,c$ and the right column $3,1,2,5,4$, exactly like the figures. Then no edges cross.
 
 % =====================================================================
 \part*{Part I \quad The problem and the classical algorithm \quad (Sriharsha)}
 
 \section{The problem}
-\sectag{Slides 1--3}{Title, problem, definitions}{2.75 min}
+\sectag{Slides 1--3}{Title, problem, three words}{2.75 min}
 
-Suppose you run a small company with five workers and five jobs. Each worker is able to do only some of the jobs. Every worker takes at most one job and every job gets at most one worker. \emph{How many jobs can you fill?} This is the problem of \textbf{bipartite matching}, and the lecture is about the algorithm of Hopcroft and Karp, which solves it in time $O(m\sqrt n)$, a factor of about $\sqrt n$ faster than what was known before 1973. (The title of the paper says $n^{5/2}$: that is what $m\sqrt n$ becomes for dense graphs, $m\sim n^2$.)
+Imagine you run a small company with five workers and five jobs. Each worker can only do some of the jobs. Every worker takes one job, and every job gets one worker. How many jobs can you fill?
 
-There are two ways to look at the same data. The paper's way is a rectangular array: rows are boys, columns are girls, and a cell is occupied when the pair is compatible. We want as many occupied cells as possible, with no two in the same row or the same column. The other way is a graph (Figure~\ref{fig:problem}).
+That's \textbf{bipartite matching}. Today's lecture is about the algorithm Hopcroft and Karp published in 1973 that solves it in $O(m\sqrt n)$ time. Before them the best known was $O(mn)$, so they gained roughly a factor of $\sqrt n$. (The title of their paper says $n^{5/2}$: that's what $m\sqrt n$ turns into on dense graphs, where $m\sim n^2$.)
+
+You can write the same data two ways (Figure~\ref{fig:problem}). The paper uses a table: rows are workers, columns are jobs, and a filled cell means ``this worker can do this job''. We pick as many filled cells as we can, no two in the same row or column. The graph version says the same thing: pick edges, no two sharing an endpoint. The slides only show the graph.
 
 \begin{center}
 \exfig{}\qquad\qquad
@@ -128,34 +130,34 @@ There are two ways to look at the same data. The paper's way is a rectangular ar
   \draw[step=1,black!40] (0.5,-4) grid (5.5,1);
   \draw[black!70] (0.5,-4) rectangle (5.5,1);
 \end{tikzpicture}
-\captionof{figure}{The running example as a graph (workers left, jobs right) and as the paper's array.}\label{fig:problem}
+\captionof{figure}{The running example as a graph (workers left, jobs right) and as the paper's table.}\label{fig:problem}
 \end{center}
 
-\begin{ask}Give the room fifteen seconds to find a best assignment by eye. They will. Then: ``Good. But a computer cannot look at a picture. We need a \emph{procedure}, and it has to be fast.''\end{ask}
+\begin{ask}Give them fifteen seconds to find the best assignment by eye. They will. Then: ``Nice. But a computer can't look at a picture. We need a recipe, and a fast one.''\end{ask}
 
-\paragraph{Definitions.} A graph is \textbf{bipartite} if its vertices split into two sets $X$ and $Y$ and every edge joins a vertex of $X$ to a vertex of $Y$. A \textbf{matching} $M\subseteq E$ is a set of edges no two of which share a vertex. A vertex is \textbf{free} (with respect to $M$) if no edge of $M$ touches it. A matching is \textbf{maximum} if no matching has more edges. Notice the difference with \textbf{maximal}, which only means that no edge can be added without breaking the matching.
+\paragraph{Three words.} A graph is \textbf{bipartite} if the vertices split into two sides $X$ and $Y$ and every edge goes between the sides. A \textbf{matching} is a set of edges where no two share a vertex. A vertex is \textbf{free} if no matching edge touches it. A matching is \textbf{maximum} if nobody has a bigger one. Careful with the cousin \textbf{maximal}: that only means you can't add another edge. We'll see in a minute that these are different.
 
-\paragraph{Why people care.} Hopcroft and Karp list systems of distinct representatives, chain decompositions of partially ordered sets, coset representatives in groups, block-triangular forms of sparse matrices, and the Hitchcock transportation problem, where matching appears as a subroutine. The best methods before them (Berge, Hall, Ford--Fulkerson, Kuhn) take $O(mn)$. Our goal: $O(m\sqrt n)$. The key phrase of the whole lecture is \emph{find many improvements per search}.
+\paragraph{Why anyone cares.} Hopcroft and Karp mention systems of distinct representatives, chain decompositions of partial orders, coset representatives in groups, block-triangular forms of sparse matrices, and the Hitchcock transportation problem, where matching is a subroutine. The best methods before 1973 (Berge, Hall, Ford--Fulkerson, Kuhn) take $O(mn)$. Our goal is $O(m\sqrt n)$, and the whole idea fits in one phrase: \emph{find many improvements per search}.
 
-\section{First attempt: greedy gets stuck}
+\section{First attempt: greedy}
 \sectag{Slide 4}{Greedy}{1.25 min}
 
-What would you try first? \emph{Greedy}: go through the edges and take an edge whenever both its ends are still free. Take $a1$, then $b2$, then $c4$. Now $d$ wants job 1 or 2, both taken; $e$ wants job 1, taken. We are stuck with three pairs (Figure~\ref{fig:greedy}).
+What would you try first? Probably the obvious thing: go through the edges and grab one whenever both ends are free. Take $a1$, then $b2$, then $c4$. Now $d$ wants job 1 or 2, both gone. $e$ wants job 1, gone. We're stuck at three pairs (Figure~\ref{fig:greedy}).
 
 \begin{center}
 \exfig{\draw[mat] (xa)--(y1); \draw[mat] (xb)--(y2); \draw[mat] (xc)--(y4);
   \freering{xd}\freering{xe}\freering{y3}\freering{y5}}
 \qquad\qquad
 \exfig{\draw[mat] (xe)--(y1); \draw[mat] (xd)--(y2); \draw[mat] (xb)--(y5); \draw[mat] (xc)--(y4); \draw[mat] (xa)--(y3);}
-\captionof{figure}{Left: the greedy matching $\{a1,b2,c4\}$; green rings mark the free vertices $d,e,3,5$. Right: a matching with five edges exists: $\{e1,d2,b5,c4,a3\}$.}\label{fig:greedy}
+\captionof{figure}{Left: the greedy matching $\{a1,b2,c4\}$; green rings mark the free vertices $d,e,3,5$. Right: five pairs are possible, $\{e1,d2,b5,c4,a3\}$.}\label{fig:greedy}
 \end{center}
 
-But the right picture shows five pairs are possible. So greedy produced a \emph{maximal} matching (nothing can be added) that is not \emph{maximum}. Keep this distinction in mind: it comes back inside Algorithm A. The real question is: \textbf{can we repair a matching without starting over?}
+But the right picture shows that five pairs exist. So greedy gave us a \emph{maximal} matching (we can't add anything) that isn't \emph{maximum}. Remember that difference; it comes back inside Algorithm A. The real question now: can we \textbf{fix} a matching without throwing it away and starting over?
 
 \section{The repair: a chain reaction}
 \sectag{Slide 5}{Repair}{1.25 min}
 
-Look at the unassigned worker $d$. Job 1 would do, but $a$ has it. Ask $a$: \emph{can you move?} $a$ can also do job 3, and 3 is free. So $a$ moves to 3 and $d$ takes 1. We went from three pairs to four and we did not undo anything: we \emph{re-routed along a chain} $d,\ 1,\ a,\ 3$ (Figure~\ref{fig:chain}).
+Look at $d$, who has no job. $d$ would love job 1, but $a$ has it. So ask $a$: can you move? $a$ can also do job 3, and nobody has job 3. So $a$ moves to 3 and $d$ takes 1. Three pairs became four, and we didn't undo anything. We just re-routed along a chain: $d$, job 1, $a$, job 3 (Figure~\ref{fig:chain}). Click through it slowly; this is the picture to hold on to.
 
 \begin{center}
 \exfig{\draw[mat] (xa)--(y1); \draw[mat] (xb)--(y2); \draw[mat] (xc)--(y4);
@@ -163,62 +165,61 @@ Look at the unassigned worker $d$. Job 1 would do, but $a$ has it. Ask $a$: \emp
   \freering{xd}\freering{y3}}
 \qquad $\Longrightarrow$ \qquad
 \exfig{\draw[mat] (xd)--(y1); \draw[mat] (xa)--(y3); \draw[mat] (xb)--(y2); \draw[mat] (xc)--(y4);\freering{xe}\freering{y5}}
-\captionof{figure}{The chain $d,1,a,3$ (red) is flipped: $a$ gives up job 1 and takes job 3, $d$ takes job 1. The matching grows from 3 to 4.}\label{fig:chain}
+\captionof{figure}{The chain $d,1,a,3$ (red) gets flipped. $a$ gives up job 1 and takes 3; $d$ takes 1. The matching grows from 3 to 4.}\label{fig:chain}
 \end{center}
 
 \section{Augmenting paths and Lemma 1}
 \sectag{Slide 6}{Augmenting paths, Lemma 1}{1 min}
 
-That chain has a name. A path $P$ is \textbf{augmenting} with respect to $M$ if both of its endpoints are free and its edges alternate between $E\setminus M$ and $M$: not in $M$, in $M$, not in $M$, \dots, not in $M$. Note that it starts and ends with a non-matching edge, so it has \emph{one more} edge outside $M$ than inside.
+That chain has a name: an \textbf{augmenting path}. It starts at a free vertex, ends at a free vertex, and its edges alternate: not in the matching, in the matching, not in, \dots, not in. Notice it begins and ends with a non-matching edge, so it has one more edge outside $M$ than inside.
 
 \begin{thm}{Lemma 1}
-If $P$ is an augmenting path for $M$, then $M\oplus P$ is a matching and $|M\oplus P|=|M|+1$.
+If $P$ is an augmenting path for $M$, then $M\oplus P$ is a matching, and it has one more edge than $M$.
 \end{thm}
 \begin{pf}
-Look at the vertices of $P$. An interior vertex $v$ of $P$ has, before the flip, exactly one matching edge, and it lies on $P$ (the path alternates). After the flip that edge is removed and the other $P$-edge at $v$ is added: so $v$ still has exactly one matching edge. The two endpoints are free before; each has one $P$-edge, which is added, so each gets exactly one matching edge. Vertices off $P$ are not touched. So $M\oplus P$ is a matching. Finally, $P$ has $k$ edges in $M$ and $k+1$ outside $M$, so the flip removes $k$ and adds $k+1$ edges: the size grows by one.
+Walk along $P$. A vertex in the middle of the path has exactly one matching edge before the flip, and that edge is on $P$ (because the path alternates). After the flip that edge is gone and the other $P$-edge at the vertex is in. So it still has exactly one matching edge. The two ends were free; each gets exactly one new matching edge. Everything off the path is untouched. So $M\oplus P$ is a matching. Now count: if $P$ has $k$ edges in $M$, it has $k+1$ outside $M$. We remove $k$ and add $k+1$. One more.
 \end{pf}
 
-\begin{board}Draw $d-1-a-3$ with the outer edges dashed ($\notin M$) and the middle edge thick ($\in M$), ring the free ends $d$ and $3$. Write ``before: 1 edge of $M$''. Redraw with the roles swapped; write ``after: 2 edges''. Say: interior vertices swap partners, the ends gain one, nobody is double-booked.\end{board}
+\begin{board}Draw $d-1-a-3$: outer edges dashed (not in $M$), middle edge thick (in $M$), ring the free ends $d$ and $3$. Write ``before: 1 edge''. Redraw with dashed and thick swapped, write ``after: 2 edges''. Say it out loud: the people in the middle swap partners, the two ends each gain one, and nobody ends up double-booked.\end{board}
 
-\begin{key}Flipping an augmenting path repairs a matching and makes it one edge larger.\end{key}
+\begin{key}Flipping an augmenting path repairs a matching and makes it one edge bigger.\end{key}
 
 \section{Theorem 1, Berge's theorem, and the classical algorithm}
-\sectag{Slide 7}{Theorem 1, Corollary 1, $O(mn)$}{1.75 min}
+\sectag{Slide 7}{Theorem 1, Berge, $O(mn)$}{1.75 min}
 
-Lemma 1 says augmenting paths \emph{help}. The important question is the converse: if my matching is not the best, is there \emph{always} an augmenting path, or might I need some more exotic repair? Theorem 1 answers yes, and says more.
+Lemma 1 says augmenting paths \emph{help}. The question that matters is the other direction: if my matching isn't the best, is there \emph{always} an augmenting path? Or might I need some cleverer repair? Theorem 1 says there is always one, and it even says how many.
 
 \begin{thm}{Theorem 1}
-Let $M$ and $N$ be matchings with $|M|=r<|N|=s$. Then $M\oplus N$ contains at least $s-r$ vertex-disjoint paths that are augmenting with respect to $M$.
+Let $M$ and $N$ be matchings with $|M|=r<|N|=s$. Then $M\oplus N$ contains at least $s-r$ vertex-disjoint paths that are augmenting for $M$.
 \end{thm}
 \begin{pf}
-Let $H$ consist of the edges that are in exactly one of $M,N$. Every vertex has at most one $M$-edge and at most one $N$-edge, so it has degree at most 2 in $H$ and, if degree 2, one edge of each kind. So every component of $H$ is a \emph{path} or a \emph{cycle} whose edges alternate between $M$ and $N$.
+Let $H$ be the set of edges that are in exactly one of $M,N$. Each vertex has at most one $M$-edge and at most one $N$-edge, so in $H$ it has degree at most 2, and if it has two edges they are one of each kind. So every component of $H$ is a path or a cycle, and along it the edges alternate between $M$ and $N$.
 
-For a component $C$ let $\delta(C)=(\#N\text{-edges})-(\#M\text{-edges})$. A cycle has even length, so $\delta=0$. A path has $\delta\in\{-1,0,+1\}$, and $\delta=+1$ exactly when it starts and ends with an $N$-edge. Summing over all components, $\sum_C\delta(C)=|N\setminus M|-|M\setminus N|=|N|-|M|=s-r$. Each component contributes at most $+1$, so \emph{at least $s-r$ components have $\delta=+1$}.
+For a component $C$ let $\delta(C)=(\#N\text{-edges})-(\#M\text{-edges})$. A cycle has an even number of edges, so $\delta=0$. A path has $\delta\in\{-1,0,+1\}$, and $\delta=+1$ exactly when it starts and ends with an $N$-edge. Add over all components: $\sum_C\delta(C)=|N\setminus M|-|M\setminus N|=|N|-|M|=s-r$. No component contributes more than $+1$, so \emph{at least $s-r$ components have $\delta=+1$}.
 
-Take such a path component $C$ and let $v$ be an endpoint. It is the end of an $N$-edge $e\notin M$. If $v$ were matched in $M$ by an edge $f$, then either $f\in N$, giving $v$ two $N$-edges $e\ne f$ (impossible), or $f\notin N$, so $f\in H$ is a second edge at $v$ in $C$ (impossible for an endpoint). So $v$ is free for $M$. Thus $C$ starts and ends at $M$-free vertices and alternates: it is augmenting for $M$. Different components are vertex-disjoint.
+Take one of them and look at an endpoint $v$. It sits at the end of an $N$-edge $e\notin M$. Suppose $v$ were matched in $M$ by some edge $f$. If $f\in N$, then $v$ would have two $N$-edges, which is impossible. If $f\notin N$, then $f$ is in $H$ too and gives $v$ a second edge in this component, so $v$ would not be an endpoint. Either way we get a contradiction, so $v$ is free for $M$. So this component starts and ends at free vertices and alternates: it's an augmenting path. Different components don't share vertices.
 \end{pf}
 
 \begin{center}
-\Needspace{14\baselineskip}
 \exfig{\draw[Medge] (xa)--(y1); \draw[Medge] (xb)--(y2); \draw[Medge] (xc)--(y4);
   \draw[Nedge] (xa)--(y3); \draw[Nedge] (xe)--(y1); \draw[Nedge] (xd)--(y2); \draw[Nedge] (xb)--(y5); \draw[Nedge] (xc)--(y4);}
 \qquad $\leadsto$ \qquad
 \exfig{\draw[Medge] (xa)--(y1); \draw[Medge] (xb)--(y2);
   \draw[Nedge] (xa)--(y3); \draw[Nedge] (xe)--(y1); \draw[Nedge] (xd)--(y2); \draw[Nedge] (xb)--(y5);
   \freering{xe}\freering{y3}\freering{xd}\freering{y5}}
-\captionof{figure}{$M=\{a1,b2,c4\}$ (blue, solid) and the maximum matching $N=\{a3,e1,d2,b5,c4\}$ (orange, dashed). Left: both together. Right: the edge $c4$ lies in both and disappears; what is left of $M\oplus N$ is two paths $e\,1\,a\,3$ and $d\,2\,b\,5$. Here $s-r=5-3=2$: exactly two disjoint augmenting paths, as the theorem promises.}\label{fig:thm1}
+\captionof{figure}{$M=\{a1,b2,c4\}$ (blue, solid) and the best matching $N=\{a3,e1,d2,b5,c4\}$ (orange, dashed). Left: both together. Right: $c4$ is in both, so it drops out, and what's left of $M\oplus N$ is two paths, $e\,1\,a\,3$ and $d\,2\,b\,5$. Here $s-r=5-3=2$: exactly the two disjoint augmenting paths the theorem promises.}\label{fig:thm1}
 \end{center}
 
-\begin{board}Draw two matchings on a small graph, $M$ solid and $N$ dashed. Erase the common edges. Say: every vertex has at most one edge of each kind, so what remains is \emph{alternating paths and cycles}. Write for each component $\delta=\#N-\#M$ and the sum $=s-r$. Conclude: at least $s-r$ components have $\delta=+1$, and their ends are free for $M$.\end{board}
+\begin{board}Two matchings on a small graph, $M$ solid and $N$ dashed. Erase what they share. Say: every vertex has at most one edge of each kind, so what's left is alternating paths and cycles. For each piece write $\delta=\#N-\#M$, and the total is $s-r$. So at least $s-r$ pieces have $\delta=+1$, and their ends are free for $M$.\end{board}
 
 \begin{thm}{Corollary 1 (Berge)}
-A matching $M$ is maximum if and only if there is no augmenting path with respect to $M$.
+A matching $M$ is maximum if and only if there is no augmenting path for $M$.
 \end{thm}
 \begin{pf}
-($\Rightarrow$) An augmenting path would give, by Lemma 1, a larger matching. ($\Leftarrow$) If $M$ is not maximum, some matching $N$ is larger, and Theorem 1 produces an augmenting path.
+($\Rightarrow$) An augmenting path would give a bigger matching by Lemma 1. ($\Leftarrow$) If $M$ isn't maximum, some $N$ is bigger, and Theorem 1 hands us an augmenting path.
 \end{pf}
 
-So the absence of augmenting paths is a \emph{certificate} of optimality, and an algorithm writes itself:
+So ``no augmenting path'' is a certificate that we're done, and the algorithm writes itself:
 
 \begin{center}
 \fbox{\parbox{0.55\linewidth}{\textbf{Classical algorithm.}\\
@@ -226,27 +227,27 @@ $M\gets\emptyset$.\\
 \textbf{while} an augmenting path $P$ exists: $M\gets M\oplus P$.\\
 \textbf{return} $M$.}}
 \end{center}
-It stops with a maximum matching by Berge. Each flip adds one edge and the final size is at most $n/2$, so there are at most $n/2$ flips; one search (BFS or DFS along alternating paths) finds a path in $O(m)$ time. Total $O(mn)$, which was the state of the art before 1973.
+By Berge the answer is a maximum matching. Each flip adds one edge and the matching never exceeds $n/2$ edges, so there are at most $n/2$ flips. Finding one path is a graph search, $O(m)$. Total: $O(mn)$, the state of the art before 1973.
 
-\textbf{Where is the waste?} At the start, every edge is an augmenting path and $a1,b2,c4$ do not even touch each other; yet we search once per path. Hopcroft and Karp's insight is how to take many at once.
+So where's the waste? Look at the start: every single edge is an augmenting path, and $a1,b2,c4$ don't even touch each other, yet we'd run three separate searches. Hopcroft and Karp's insight is how to grab many paths with one search.
 
-\begin{key}Berge: augmenting paths are all we ever need; one path per search gives $O(mn)$. Handing over to Aman: how do we take many at once?\end{key}
+\begin{key}Augmenting paths are all we ever need, and one path per search costs $O(mn)$. Over to Aman: how do we take many at once?\end{key}
 
 % =====================================================================
 \part*{Part II \quad Hopcroft and Karp's idea \quad (Aman)}
 
 \section{The idea: always use a shortest augmenting path}
-\sectag{Slide 8}{The plan}{0.75 min}
+\sectag{Slide 8}{Take many at once?}{0.75 min}
 
-Hopcroft and Karp build a sequence of matchings
+Here is what Hopcroft and Karp do. Build a sequence of matchings
 \[
 M_0=\emptyset,\qquad M_{i+1}=M_i\oplus P_i,\qquad P_i\text{ a \emph{shortest} augmenting path for }M_i .
 \]
-Look at what this does on our example (Figure~\ref{fig:lengths}): the lengths of the paths used are $1,1,1,3,5$. They never go down, and they come in groups of equal length. If that is true in general, then each group can be found \emph{all at once}. We need three facts.
+Look at what that gives on our example (Figure~\ref{fig:lengths}): the lengths of the paths we use are $1,1,1,3,5$. They never go down, and they come in groups of equal length. If that holds in general, we can find a whole group at once. Three facts will make it work:
 \begin{enumerate}
-  \item The lengths $|P_i|$ never decrease (Theorem 2).
-  \item Paths of the \emph{same} length are vertex-disjoint (Corollary 4): so a whole group can be found together, in any order.
-  \item There are only $O(\sqrt n)$ \emph{different} lengths (Theorem 3).
+  \item The lengths never decrease (Theorem 2).
+  \item Paths of the same length are vertex-disjoint (Corollary 4), so a whole group can be found together, in any order.
+  \item There are only $O(\sqrt n)$ different lengths (Theorem 3).
 \end{enumerate}
 \begin{center}
 \begin{tikzpicture}[x=1.1cm,y=0.5cm]
@@ -265,82 +266,82 @@ Look at what this does on our example (Figure~\ref{fig:lengths}): the lengths of
 \sectag{Slide 9}{Theorem 2}{1.5 min}
 
 \begin{thm}{Theorem 2}
-Let $P$ be a shortest augmenting path for $M$ and let $P'$ be an augmenting path for $M\oplus P$. Then $|P'|\ge|P|+|P\cap P'|$.
+Let $P$ be a shortest augmenting path for $M$, and let $P'$ be an augmenting path for $M\oplus P$. Then $|P'|\ge|P|+|P\cap P'|$.
 \end{thm}
-In words: flipping a shortest path can only push the remaining augmenting paths further away, never closer, and if $P'$ reuses edges of $P$ it is even longer.
+In plain words: flip a shortest path, and any augmenting path that's left is no shorter than before. If it reuses edges of $P$ it's even longer. (The slide shows just the simple consequence $|P'|\ge|P|$.)
 
 \begin{pf}
-Let $N=(M\oplus P)\oplus P'$. By Lemma 1 applied twice, $N$ is a matching and $|N|=|M|+2$. Apply Theorem 1 to $M$ and $N$: the set $M\oplus N$ contains at least two vertex-disjoint augmenting paths for $M$, and each of them has length at least $|P|$, because $P$ was a \emph{shortest} augmenting path for $M$. But
+Let $N=(M\oplus P)\oplus P'$. Lemma 1 applied twice says $N$ is a matching with $|N|=|M|+2$. Now use Theorem 1 on $M$ and $N$: $M\oplus N$ contains at least two vertex-disjoint augmenting paths for $M$, and each is at least as long as $|P|$ because $P$ was a shortest one. But
 \[
 M\oplus N=M\oplus M\oplus P\oplus P'=P\oplus P',
 \]
-so $|P\oplus P'|\ge 2|P|$. On the other hand $|P\oplus P'|=|P|+|P'|-2|P\cap P'|$. Putting the two together,
+so $|P\oplus P'|\ge 2|P|$. Counting the other way, $|P\oplus P'|=|P|+|P'|-2|P\cap P'|$. Put them together:
 \[
 |P'|\ \ge\ |P|+2|P\cap P'|\ \ge\ |P|+|P\cap P'| .
 \]
-(The paper states the weaker form; the proof gives the factor 2.)
+(The paper states the weaker version; the proof actually gives the factor 2.)
 \end{pf}
 
-\begin{board}Write $M\xrightarrow{\ \oplus P\ }M\oplus P\xrightarrow{\ \oplus P'\ }N$ and $|N|=|M|+2$. Theorem 1 on $M,N$: two disjoint augmenting paths for $M$ inside $P\oplus P'$, each $\ge|P|$, so $|P\oplus P'|\ge2|P|$. Also $|P\oplus P'|=|P|+|P'|-2|P\cap P'|$. Conclude.\end{board}
+\begin{board}Write $M\xrightarrow{\ \oplus P\ }M\oplus P\xrightarrow{\ \oplus P'\ }N$ and $|N|=|M|+2$. Theorem 1 on $M,N$: two disjoint augmenting paths for $M$ inside $P\oplus P'$, each at least $|P|$, so $|P\oplus P'|\ge2|P|$. Then count $|P\oplus P'|=|P|+|P'|-2|P\cap P'|$. Read off the answer.\end{board}
 
-\begin{key}Along the run of the scheme, path lengths never decrease. Next: equal lengths mean disjoint.\end{key}
+\begin{key}Along the run, path lengths never go down. Next: equal lengths mean disjoint.\end{key}
 
 \section{Corollaries 3 and 4, and Algorithm A}
 \sectag{Slides 10--11}{Cor.~3, 4, Algorithm A}{1.75 min}
 
 \begin{thm}{Corollary 3}
-In the sequence $P_0,P_1,\dots$ above, $|P_i|\le|P_{i+1}|$.
+In the sequence $P_0,P_1,\dots$ we have $|P_i|\le|P_{i+1}|$.
 \end{thm}
 \begin{pf}
-Theorem 2 with $M=M_i$, $P=P_i$ and $P'=P_{i+1}$ (which is augmenting for $M_{i+1}=M_i\oplus P_i$).
+Theorem 2 with $M=M_i$, $P=P_i$, $P'=P_{i+1}$, which is augmenting for $M_{i+1}=M_i\oplus P_i$.
 \end{pf}
 
 \begin{thm}{Corollary 4}
 If $|P_i|=|P_j|$ then $P_i$ and $P_j$ are vertex-disjoint.
 \end{thm}
 \begin{pf}
-Suppose some pair of equal length touches, and among all such pairs choose $P_k,P_l$ ($k<l$) with $l-k$ as small as possible. By Corollary 3 every path between them has the same length, and by minimality it is disjoint from $P_k$ and from $P_l$. So the flips of $P_{k+1},\dots,P_{l-1}$ do not affect $P_l$: it is still augmenting for $M_{k+1}=M_k\oplus P_k$. Theorem 2 with $M=M_k$, $P=P_k$, $P'=P_l$ and $|P_l|=|P_k|$ forces $P_k\cap P_l=\emptyset$: no common \emph{edge}. Now suppose they share a \emph{vertex} $v$. In $M_{k+1}$ the vertex $v$ is matched by an edge $e$ of $P_k$. The endpoints of $P_l$ are free in $M_{k+1}$, so $v$ is an interior vertex of $P_l$ and $P_l$ uses its matching edge at $v$, which is $e$: a common edge, a contradiction.
+Suppose some pair of equal length touches. Among all such pairs pick $P_k,P_l$ ($k<l$) with $l-k$ smallest. By Corollary 3 every path in between has the same length too, and by the minimal choice each is disjoint from $P_k$ and from $P_l$. So flipping $P_{k+1},\dots,P_{l-1}$ doesn't disturb $P_l$: it's still augmenting for $M_{k+1}=M_k\oplus P_k$. Now Theorem 2 with $M=M_k$, $P=P_k$, $P'=P_l$ and equal lengths forces $P_k\cap P_l=\emptyset$: no shared \emph{edge}. Suppose they share a \emph{vertex} $v$. In $M_{k+1}$, $v$ is matched along an edge $e$ of $P_k$. The ends of $P_l$ are free in $M_{k+1}$, so $v$ is in the middle of $P_l$, and $P_l$ passes through $v$ along its matching edge, which is $e$. That's a shared edge after all, a contradiction.
 \end{pf}
 
-\textbf{What this buys.} The run of the scheme splits into blocks of equal length. Inside a block all the paths are disjoint, so \emph{each of them was already augmenting at the start of the block}. We may find them together, in any order. That is a \textbf{phase}, and it leads to the algorithm of Hopcroft and Karp.
+\textbf{What this buys us.} The run splits into blocks of equal length. Inside a block the paths are disjoint, so every one of them was already augmenting at the start of the block. We can find them together, in any order. That's a \textbf{phase}, and it's the heart of the Hopcroft--Karp algorithm.
 
 \begin{center}
 \fbox{\parbox{0.9\linewidth}{\textbf{Algorithm A.}\\[2pt]
 \textbf{Step 0.} $M\gets\emptyset$.\\
-\textbf{Step 1.} Let $\ell$ be the length of a shortest augmenting path for $M$. Find a \emph{maximal} set $\{Q_1,\dots,Q_t\}$ of vertex-disjoint augmenting paths of length $\ell$. If there is no augmenting path, \textbf{halt}.\\
+\textbf{Step 1.} Let $\ell$ be the length of a shortest augmenting path for $M$. Find a \emph{maximal} set $\{Q_1,\dots,Q_t\}$ of vertex-disjoint augmenting paths of length $\ell$. If there is no augmenting path at all, \textbf{halt}.\\
 \textbf{Step 2.} $M\gets M\oplus Q_1\oplus\dots\oplus Q_t$; go to Step 1.}}
 \end{center}
 
-\emph{Correctness.} The algorithm halts only when no augmenting path exists, so by Berge the matching is maximum. \emph{Maximal, not maximum.} The set in Step 1 only has to be \emph{maximal}: no further path of length $\ell$ can be added. Flipping $Q_1,\dots,Q_t$ one after the other is a legal piece of the shortest-path scheme, because the $Q_i$ are disjoint, so $Q_i$ is still augmenting after the earlier flips, and its length $\ell$ is still the shortest by Corollary 3. \emph{The length grows.} After the phase, suppose an augmenting path $Q$ of length $\ell$ were left. Then $Q_1,\dots,Q_t,Q$ is a piece of the scheme with all lengths equal, so by Corollary 4 $Q$ is disjoint from every $Q_i$; it was already augmenting before the phase and could have been added, contradicting maximality. Hence \textbf{$\ell$ strictly increases from phase to phase}. Two questions remain: how many phases are there (section 9), and how can one phase be done in linear time (section 10)?
+\emph{Why it's correct.} It halts only when no augmenting path is left, so by Berge the matching is maximum. \emph{Why maximal is enough.} Step 1 only needs a maximal set: one we can't extend. Flipping $Q_1,\dots,Q_t$ one after another is a legitimate piece of the shortest-path sequence, since the $Q_i$ are disjoint (each is still augmenting after the earlier flips) and their length $\ell$ is still the shortest by Corollary 3. \emph{Why the length grows.} After the phase, suppose an augmenting path $Q$ of length $\ell$ were still there. Then $Q_1,\dots,Q_t,Q$ is a stretch of the sequence with all lengths equal, so Corollary 4 says $Q$ is disjoint from every $Q_i$. But then $Q$ was already augmenting before the phase and we could have added it, contradicting maximality. So \textbf{$\ell$ strictly increases from phase to phase}. Two questions left: how many phases (section 9), and how to do one phase in linear time (section 10).
 
-\section{Few phases: Corollary 2, Theorem 3, Corollary 5}
-\sectag{Slide 12}{$O(\sqrt n)$ phases}{1.25 min}
+\section{How many phases? Corollary 2, Theorem 3, Corollary 5}
+\sectag{Slide 12}{How many phases?}{1.25 min}
 
-First an easy but important consequence of Theorem 1: when we are far from the optimum, there is a short augmenting path.
+First a small consequence of Theorem 1: if we're far from the best matching, there's a short augmenting path.
 
 \begin{thm}{Corollary 2}
-Let $|M|=r$ and let a maximum matching have size $s>r$. Then there is an augmenting path for $M$ of length at most $2\lfloor r/(s-r)\rfloor+1$.
+If $|M|=r$ and a maximum matching has size $s>r$, then there's an augmenting path for $M$ of length at most $2\lfloor r/(s-r)\rfloor+1$.
 \end{thm}
 \begin{pf}
-Let $N$ be a maximum matching. By Theorem 1 there are $s-r$ vertex-disjoint augmenting paths for $M$. Being disjoint, they use different edges of $M$, and $M$ has only $r$ edges, so one of the paths contains at most $\lfloor r/(s-r)\rfloor$ edges of $M$. A path with $k$ edges of $M$ has $k+1$ edges outside $M$, that is $2k+1$ edges in all.
+Take a maximum matching $N$. Theorem 1 gives $s-r$ vertex-disjoint augmenting paths for $M$. Being disjoint, they use different edges of $M$, and $M$ has only $r$ edges, so one of the paths uses at most $\lfloor r/(s-r)\rfloor$ of them. A path with $k$ edges from $M$ has $k+1$ edges outside $M$, so $2k+1$ edges in all.
 \end{pf}
-\emph{Example.} $r=3$, $s=5$: the bound is $2\lfloor3/2\rfloor+1=3$, and indeed the second phase has length 3.
+\emph{Check on the example:} $r=3$, $s=5$ gives $2\lfloor3/2\rfloor+1=3$, and the second phase indeed has length 3.
 
 \begin{thm}{Theorem 3 and Corollary 5}
-If a maximum matching has size $s$, the lengths $|P_0|,|P_1|,\dots$ take at most $2\lfloor\sqrt s\rfloor+2$ distinct values. Hence Algorithm A runs for at most $2\lfloor\sqrt s\rfloor+2$ phases.
+If a maximum matching has size $s$, the lengths $|P_0|,|P_1|,\dots$ take at most $2\lfloor\sqrt s\rfloor+2$ different values. So Algorithm A runs at most $2\lfloor\sqrt s\rfloor+2$ phases.
 \end{thm}
 \begin{pf}
-Let $r=\lfloor s-\sqrt s\rfloor$ and cut the run at the moment the matching reaches size $r$.
+Let $r=\lfloor s-\sqrt s\rfloor$ and split the run at the moment the matching reaches size $r$.
 
-\emph{Before the cut}, $|M|<r\le s-\sqrt s$, so $s-|M|>\sqrt s$ and
+\emph{Before the split:} $|M|<r\le s-\sqrt s$, so $s-|M|>\sqrt s$ and
 \[
 \frac{|M|}{s-|M|}=\frac{s}{s-|M|}-1<\frac{s}{\sqrt s}-1<\sqrt s .
 \]
-By Corollary 2 the shortest augmenting path has length at most $2\lfloor\sqrt s\rfloor+1$. Lengths are odd, so there are at most $\lfloor\sqrt s\rfloor+1$ possible values here.
+By Corollary 2 the shortest augmenting path has length at most $2\lfloor\sqrt s\rfloor+1$. Lengths are odd, so there are at most $\lfloor\sqrt s\rfloor+1$ possible values.
 
-\emph{After the cut}, only $s-r=\lceil\sqrt s\rceil$ edges are missing, and every augmentation gains one edge: at most $\lceil\sqrt s\rceil$ further values.
+\emph{After the split:} only $s-r=\lceil\sqrt s\rceil$ edges are missing, and each augmentation gains one, so at most $\lceil\sqrt s\rceil$ more values.
 
-In total at most $\lfloor\sqrt s\rfloor+1+\lceil\sqrt s\rceil\le2\lfloor\sqrt s\rfloor+2$ distinct lengths. Because the length strictly increases from phase to phase, each phase uses a new value: the number of phases is at most the number of distinct lengths (Corollary 5).
+Altogether at most $\lfloor\sqrt s\rfloor+1+\lceil\sqrt s\rceil\le2\lfloor\sqrt s\rfloor+2$ different lengths. Since the length strictly grows from phase to phase, every phase uses a new value, so the number of phases is at most the number of values (Corollary 5).
 \end{pf}
 
 \begin{center}
@@ -355,18 +356,18 @@ In total at most $\lfloor\sqrt s\rfloor+1+\lceil\sqrt s\rceil\le2\lfloor\sqrt s\
 \captionof{figure}{Where the $2\sqrt s+2$ comes from.}\label{fig:split}
 \end{center}
 
-\begin{board}Draw the line from $0$ to $s$ with a mark at $s-\sqrt s$ (Figure~\ref{fig:split}). Left of the mark: $s-|M|>\sqrt s$, Corollary 2 gives $\ell\le2\sqrt s+1$, odd and increasing, so $\le\sqrt s$ phases. Right of the mark: only $\sqrt s$ edges are missing, each phase gains one. Total $2\sqrt s$. Add the one-line proof of Corollary 2: $s-r$ disjoint paths share $r$ matching edges, so one has $\le r/(s-r)$ of them.\end{board}
+\begin{board}Draw the line from $0$ to $s$ with a mark at $s-\sqrt s$ (Figure~\ref{fig:split}). Left of the mark: more than $\sqrt s$ edges are missing, so Corollary 2 says paths are short, at most $2\sqrt s+1$, and odd and increasing: about $\sqrt s$ phases. Right of the mark: only $\sqrt s$ edges are missing, and each phase gains one: about $\sqrt s$ phases. Total about $2\sqrt s$. Add the one-line reason for Corollary 2: $s-r$ disjoint paths share only $r$ matching edges, so one of them has at most $r/(s-r)$.\end{board}
 
-\begin{ask}``Why split at $\sqrt n$ and not somewhere else?'' If we cut when $t$ edges are missing, the late part has $t$ phases and the early part about $n/t$; $t+n/t$ is smallest at $t=\sqrt n$.\end{ask}
+\begin{ask}``Why split at $\sqrt n$ and not somewhere else?'' If we split when $t$ edges are missing, the late part has $t$ phases and the early part about $n/t$. The sum $t+n/t$ is smallest at $t=\sqrt n$.\end{ask}
 
-\begin{key}Few different lengths early on (short paths), few augmentations left at the end: $O(\sqrt n)$ phases.\end{key}
+\begin{key}Early on the paths are short, so there are few different lengths. At the end few edges are missing, so few phases. That makes $O(\sqrt n)$ phases.\end{key}
 
-\section{One phase in $O(m+n)$: the layered graph and Algorithm B}
+\section{One phase in linear time: the layered graph and Algorithm B}
 \sectag{Slides 13--16}{Orient, layered graph, Algorithm B}{3.0 min}
 
-It remains to implement Step 1 of Algorithm A: given $M$, find a maximal set of vertex-disjoint \emph{shortest} augmenting paths in $O(m+n)$ time. This is where bipartiteness is used.
+Now Step 1 of Algorithm A: given $M$, find a maximal set of disjoint \emph{shortest} augmenting paths in $O(m+n)$ time. This is the only place we use that the graph is bipartite.
 
-\paragraph{Step 1: orient the edges.} Direct every edge \emph{not} in $M$ from girl to boy and every edge \emph{in} $M$ from boy to girl. An augmenting path alternates, so it becomes an ordinary \textbf{directed path from a free girl to a free boy} (in our example $3\to a\to1\to d$). Alternating becomes ``follow the arrows''; that is exactly what bipartiteness buys.
+\paragraph{Step 1: orient the edges.} Direct every edge that's not in $M$ from girl to boy, and every edge in $M$ from boy to girl. An augmenting path alternates, so now it's an ordinary \textbf{directed path from a free girl to a free boy}. In our example: $3\to a\to1\to d$. ``Alternating'' has become ``follow the arrows'', and that's exactly what bipartiteness gives us.
 
 \begin{center}
 \begin{tikzpicture}[scale=0.75]
@@ -377,17 +378,17 @@ It remains to implement Step 1 of Algorithm A: given $M$, find a maximal set of 
   \draw[dred] (y3)--(xa); \draw[dred] (xa)--(y1); \draw[dred] (y1)--(xd);
   \freering{xd}\freering{xe}\freering{y3}\freering{y5}
 \end{tikzpicture}
-\captionof{figure}{Phase 2 of the example: $M=\{a1,b2,c4\}$ (thick arrows boy$\to$girl), other edges girl$\to$boy. The red directed path $3\to a\to1\to d$ is augmenting.}
+\captionof{figure}{Phase 2 of the example, $M=\{a1,b2,c4\}$. Thick arrows (boy to girl) are in $M$; the others go girl to boy. The red path $3\to a\to1\to d$ is augmenting.}
 \end{center}
 
-\paragraph{Step 2: the layered graph $\widetilde G$.} We want only the \emph{shortest} paths, so run a breadth-first search \emph{backwards} from the free boys.
+\paragraph{Step 2: the layered graph $\widetilde G$.} We only want the shortest paths, so run a breadth-first search backwards from the free boys:
 \begin{itemize}
   \item $L_0$ is the set of free boys.
-  \item $L_{i+1}$ is the set of vertices not yet seen that have an edge \emph{into} $L_i$.
-  \item Stop at the first level $i^*$ that contains a free girl.
-  \item Keep only the edges between consecutive levels; add a source $s$ with edges to the free girls (they lie in $L_{i^*}$) and a sink $t$ with edges from the free boys $L_0$.
+  \item $L_{i+1}$ is the set of new vertices that have an edge into $L_i$.
+  \item Stop at the first level $i^*$ that has a free girl in it.
+  \item Keep only the edges between neighbouring levels. Add a source $s$ pointing to the free girls (they're all in $L_{i^*}$) and a sink $t$ fed by the free boys $L_0$.
 \end{itemize}
-In our example (Figure~\ref{fig:layers}): $L_0=\{d,e\}$, $L_1=\{1,2\}$, $L_2=\{a,b\}$ (the mates of 1 and 2), $L_3=\{3,5\}$, and $3,5$ are free girls, so $i^*=3$.
+On our example (Figure~\ref{fig:layers}): $L_0=\{d,e\}$, then $L_1=\{1,2\}$, then $L_2=\{a,b\}$ (the partners of 1 and 2), then $L_3=\{3,5\}$. Both 3 and 5 are free girls, so $i^*=3$.
 
 \begin{center}
 \begin{tikzpicture}[scale=0.9]
@@ -398,9 +399,9 @@ In our example (Figure~\ref{fig:layers}): $L_0=\{d,e\}$, $L_1=\{1,2\}$, $L_2=\{a
 \captionof{figure}{The layered graph $\widetilde G$ of phase 2. Thick arrows are matching edges.}\label{fig:layers}
 \end{center}
 
-\textbf{Properties.} (i) $\widetilde G$ is acyclic: every edge goes down one level. (ii) Every path from $s$ to $t$ has the same length $i^*$ (plus the two edges at $s$ and $t$). (iii) The $s$--$t$ paths are in one-to-one correspondence with the shortest augmenting paths for $M$. \emph{Why:} a vertex's level is its directed distance to the nearest free boy. A shortest augmenting path is a shortest directed path from a free girl to a free boy, so it has length $i^*$, it starts at a free girl on level $i^*$, and since a level can drop by at most one per edge, every edge of it goes from level $j$ to level $j-1$: it lies inside $\widetilde G$. Conversely every such path is augmenting. Building $\widetilde G$ is one BFS: $O(m+n)$.
+\textbf{Three properties.} (i) $\widetilde G$ has no cycles, since every edge drops one level. (ii) Every path from $s$ to $t$ has the same length. (iii) The $s$--$t$ paths are exactly the shortest augmenting paths for $M$. \emph{Why (iii):} a vertex's level is its directed distance to the nearest free boy. A shortest augmenting path is a shortest directed path from a free girl to a free boy, so it starts at a free girl on level $i^*$ and has length $i^*$. A level can drop by at most one per edge, so every edge of the path goes from level $j$ to $j-1$, and the path lies inside $\widetilde G$. And every $s$--$t$ path is augmenting. Building $\widetilde G$ is a single BFS: $O(m+n)$.
 
-\paragraph{Step 3: Algorithm B, a maximal set of disjoint $s$--$t$ paths.} We need a maximal set of $s$--$t$ paths in $\widetilde G$ with no common vertex except $s,t$. It is a depth-first search with a twist. We keep a \textbf{stack} for the current path, a list $\mathrm{LIST}(v)$ of the out-neighbours of each vertex $v$, and a set $B$ of vertices that have been visited and may \emph{never be reused}.
+\paragraph{Step 3: Algorithm B.} We want a maximal set of $s$--$t$ paths that share no vertex except $s$ and $t$. It's a depth-first search with one twist. We keep a \textbf{stack} for the current path, for each vertex a list $\mathrm{LIST}(v)$ of its out-neighbours, and a set $B$ of vertices that are visited and \emph{never to be used again}.
 \begin{center}
 \fbox{\parbox{0.88\linewidth}{\small\textbf{Algorithm B.}\\
 \textsc{push} $s$\\
@@ -413,9 +414,9 @@ In our example (Figure~\ref{fig:layers}): $L_0=\{d,e\}$, $L_1=\{1,2\}$, $L_2=\{a
 \hspace*{3.6em}\textbf{else} $B\gets B\cup\{\mathrm{top}\}$\\
 \hspace*{1.2em}\textsc{pop}}}
 \end{center}
-The twist: \emph{every edge we look at is deleted}, and \emph{every vertex ever visited stays in $B$}, whether it ends up on a printed path or in a dead end. Nothing is explored twice. ($t$ is never put into $B$, so later paths can still end there.)
+The twist: every edge we look at is \emph{deleted}, and every vertex we visit goes into $B$ for good, whether it ends up on a printed path or in a dead end. So nothing is explored twice. ($t$ itself is never put into $B$, so later paths can still end there.)
 
-\emph{The walkthrough} on phase 2 (Figure~\ref{fig:algb}). The stack starts as $s$. Follow the first edge of each list: push $3$, then $a$, then $1$, then $d$, then $t$. We reached $t$: print $s\,3\,a\,1\,d\,t$, which is the augmenting path $d1a3$. All its vertices stay in $B$. Back at $s$: the next neighbour is 5; push $5$, $b$, $2$. The only edge out of $2$ leads to $d$, which is in $B$: blocked, delete the edge. The list of $2$ is empty: pop $2$, then $b$, $5$, and finally $s$: the stack is empty, stop. One path, and it is \emph{maximal}: $e$ would need job 1, which is used. (A different order could give two paths, but \emph{maximal is all Algorithm A needs}.)
+\emph{Walkthrough} on phase 2 (Figure~\ref{fig:algb}). The stack starts as $s$. Follow the first edge of each list: push 3, then $a$, then 1, then $d$, then $t$. We hit $t$, so we print $s\,3\,a\,1\,d\,t$. That's the augmenting path $d1a3$. Its vertices stay in $B$. Back at $s$ the next neighbour is 5: push 5, $b$, 2. The only edge out of 2 goes to $d$, which is in $B$, so it's blocked and gets deleted. The list of 2 is empty: pop 2, then $b$, then 5, then $s$. The stack is empty, so we stop. We found one path, and it's maximal: $e$ needs job 1 and that's taken. (A different order could have found two paths, but maximal is all Algorithm A needs.)
 
 \begin{center}
 \begin{tikzpicture}[scale=0.6]
@@ -434,24 +435,24 @@ The twist: \emph{every edge we look at is deleted}, and \emph{every vertex ever 
 \captionof{figure}{Algorithm B on the layered graph of phase 2. Left: the first path (red) is printed. Right: the second try (orange) runs into $d\in B$ and is abandoned.}\label{fig:algb}
 \end{center}
 
-\paragraph{Why Algorithm B is correct.} Printed paths are disjoint because their vertices stay in $B$ and are never pushed again. For maximality, call a vertex \emph{dead} when it is popped without lying on a printed path. We claim that a dead vertex $v$ has no path to $t$ avoiding the vertices of printed paths. Indeed, when $v$ is popped, every out-neighbour $w$ of $v$ has been examined, and each was in $B$ at that moment. Such a $w$ is either on a printed path, or dead (by induction, no way to $t$ either), or on the stack: but $w$ on the stack below $v$ would give a cycle $w\to\dots\to v\to w$, impossible since $\widetilde G$ is acyclic. Printed paths only grow with time, so a dead vertex stays dead. When the stack becomes empty, every out-neighbour of $s$ is printed or dead: no further $s$--$t$ path avoids the printed ones. That is maximality.
+\paragraph{Why Algorithm B is correct.} The printed paths are disjoint because their vertices stay in $B$ and are never pushed again. For maximality, call a vertex \emph{dead} if it gets popped without being on a printed path. Claim: a dead vertex $v$ has no way to $t$ that avoids the vertices of the printed paths. When $v$ is popped, every out-neighbour $w$ has been looked at, and each one was already in $B$. Such a $w$ is on a printed path, or it's dead too (and by induction has no way out), or it's on the stack. That last case can't happen: $w$ on the stack below $v$ would give a cycle $w\to\dots\to v\to w$, and $\widetilde G$ has no cycles. Printed paths only get added over time, so a dead vertex stays dead. When the stack finally empties, every out-neighbour of $s$ is printed or dead, so no other $s$--$t$ path avoids the printed ones. That's maximality.
 
-\paragraph{Cost.} Every pass of the inner loop deletes an edge; every outer pass pops a vertex; neither is ever repeated (a vertex is pushed at most once, except $s$ and $t$, which are pushed once per printed path, and each such push uses up an edge). So the total work is $O(\#\text{edges}+\#\text{vertices})=O(m+n)$. With the BFS, \textbf{one phase costs $O(m+n)$}.
+\paragraph{The cost.} Every pass of the inner loop deletes an edge, every outer pass pops a vertex, and neither happens twice for the same edge or vertex. (A vertex is pushed at most once. The exceptions are $s$ and $t$, pushed once per printed path, and each such push uses up an edge.) So the work is proportional to the number of edges plus the number of vertices: $O(m+n)$. With the BFS, \textbf{one phase costs $O(m+n)$}.
 
-\begin{key}Orient the edges, BFS to a layered graph, DFS with deletion: a maximal set of disjoint shortest augmenting paths in linear time.\end{key}
+\begin{key}Orient the edges, BFS into a layered graph, DFS with deletion: a maximal set of disjoint shortest augmenting paths, in linear time.\end{key}
 
 \section{Putting it together: the bound and the whole run}
-\sectag{Slide 17}{The Hopcroft--Karp bound}{0.5 min}
+\sectag{Slide 17}{The bound}{0.5 min}
 
 \begin{thm}{The Hopcroft--Karp bound}
-Algorithm A, with each phase done by orienting, BFS and Algorithm B, finds a maximum matching in time $O\big((m+n)\sqrt n\big)$, which is $O(m\sqrt n)$ if there are no isolated vertices.
+Algorithm A, with each phase done by orienting, BFS and Algorithm B, finds a maximum matching in time $O\big((m+n)\sqrt n\big)$. That is $O(m\sqrt n)$ when no vertex is isolated.
 \end{thm}
 \begin{pf}
-At most $2\lfloor\sqrt s\rfloor+2=O(\sqrt n)$ phases (Corollary 5), each $O(m+n)$. With no isolated vertices $m\ge n/2$, so $m+n=O(m)$.
+At most $2\lfloor\sqrt s\rfloor+2=O(\sqrt n)$ phases (Corollary 5), each costing $O(m+n)$. Without isolated vertices $m\ge n/2$, so $m+n=O(m)$.
 \end{pf}
-For dense graphs, $m\sim n^2$, this is $O(n^{5/2})$: the number in the title of the paper. To feel the difference: $n=10^4$ and $m=10^5$ give $mn=10^9$ against $m\sqrt n=10^7$.
+On dense graphs, $m\sim n^2$, that's $O(n^{5/2})$: the number in the paper's title. To feel the gap: with $n=10^4$ and $m=10^5$, $mn$ is $10^9$ and $m\sqrt n$ is $10^7$.
 
-\paragraph{The whole run on the example} (Figure~\ref{fig:run}). Phase 1: every edge is a path of length 1; Algorithm B finds three disjoint ones, $a1,b2,c4$. Phase 2: shortest length 3; one path, $d1a3$. Phase 3: shortest length 5; one path, $e1d2b5$, and the matching is perfect. The next BFS finds no free girl and the algorithm halts. The lengths $1<3<5$ increase strictly, as proved, and three phases is well below the bound $2\lfloor\sqrt5\rfloor+2=6$.
+\paragraph{The whole run, once more.} Phase 1: every edge is a path of length 1, and Algorithm B finds three that are disjoint: $a1,b2,c4$. Phase 2: the shortest length is 3, and Algorithm B finds one path, $d1a3$. Phase 3: the shortest length is 5, one path, $e1d2b5$, and the matching is perfect (Figure~\ref{fig:run}). The next BFS finds no free girl, so we stop. The lengths $1<3<5$ increase strictly, just as we proved, and three phases is well under the bound $2\lfloor\sqrt5\rfloor+2=6$.
 
 \begin{center}
 \exfig{\draw[mat] (xa)--(y1); \draw[mat] (xb)--(y2); \draw[mat] (xc)--(y4);}\
@@ -467,43 +468,44 @@ paths found by Algorithm B & $a1,b2,c4$ & $d1a3$ & $e1d2b5$\\
 $|M|$ after the phase & 3 & 4 & 5\\
 \bottomrule
 \end{tabular}
-\captionof{figure}{The matching after each phase of the run on the example.}\label{fig:run}
+\captionof{figure}{The matching after each phase on the running example.}\label{fig:run}
 \end{center}
 
-\section{Summary and what came after}
+\section{Summary}
 \sectag{Slide 18}{Summary}{0.5 min}
 
 \begin{enumerate}
-  \item A bad matching is repaired by an augmenting path (Lemma 1), and when none is left the matching is maximum (Berge, Corollary 1).
+  \item Augmenting paths repair a matching (Lemma 1).
+  \item When none is left, the matching is maximum (Berge, Corollary 1).
   \item One path per search gives $O(mn)$.
-  \item Hopcroft and Karp use \emph{shortest} augmenting paths (Theorem 2): lengths never decrease, equal-length paths are disjoint (Corollaries 3, 4), so a whole batch is found per phase (Algorithm A).
+  \item Hopcroft and Karp flip a whole batch of \emph{shortest} paths per phase: lengths never decrease (Theorem 2), and equal-length paths are disjoint (Corollaries 3, 4), so a batch can be found at once (Algorithm A).
   \item There are only $O(\sqrt n)$ phases (Corollary 2, Theorem 3).
-  \item One phase costs $O(m+n)$: orient the edges, build the layered graph by BFS, and run Algorithm B, a DFS with deletion.
+  \item One phase costs $O(m+n)$: orient the edges, BFS into a layered graph, DFS with deletion (Algorithm B).
 \end{enumerate}
-\textbf{After the paper} (from general knowledge of the literature, \emph{not} from the paper; verify before quoting precisely). The same phase idea is Dinic's blocking-flow method, and Even and Tarjan (1975) showed $O(m\sqrt n)$ for unit-capacity networks. The paper hoped for non-bipartite graphs; Micali and Vazirani (1980) achieved $O(m\sqrt n)$ there. Recent max-flow results are almost-linear in theory, but Hopcroft--Karp remains the standard routine for bipartite matching.
+\textbf{After the paper.} (This comes from general knowledge, not from the paper, and it is not on the slides, so double-check before quoting it.) The same phase idea shows up in Dinic's blocking-flow algorithm, and Even and Tarjan (1975) got $O(m\sqrt n)$ for unit-capacity networks. The paper hoped to handle non-bipartite graphs too, and Micali and Vazirani (1980) did, in $O(m\sqrt n)$. Newer max-flow results are almost linear in theory, but Hopcroft--Karp is still the standard tool for bipartite matching.
 
 Thank you. Questions?
 
 % =====================================================================
 \section*{Appendix A \quad Details you may be asked}
-\textbf{Algorithm B in the paper's wording.} PUSH $s$; while STACK $\ne\emptyset$: while LIST(TOP) $\ne\emptyset$: FIRST $\leftarrow$ first element of LIST(TOP); DELETE; if FIRST $\notin B$: PUSH FIRST; if TOP $\ne t$ then $B\leftarrow B\cup\{\text{TOP}\}$ else PRINT, PUSH $s$; then POP. (Reconstructed from the garbled text of the paper's page; check it against the original.)
+\textbf{Algorithm B in the paper's wording.} PUSH $s$; while STACK $\ne\emptyset$: while LIST(TOP) $\ne\emptyset$: FIRST $\leftarrow$ first element of LIST(TOP); DELETE; if FIRST $\notin B$: PUSH FIRST; if TOP $\ne t$ then $B\leftarrow B\cup\{\text{TOP}\}$ else PRINT, PUSH $s$; then POP. (Reconstructed from the garbled text of the paper's page. Check it against the original.)
 
-\textbf{Orientation in the paper.} Non-matching edges girl$\to$boy, matching edges boy$\to$girl, $L_0$ = free boys, $L_{i+1}$ = vertices with an edge \emph{into} $L_i$; paths run from free girls to free boys, as in the figures. The textbook (CLRS, Wikipedia) version runs BFS from the free left vertices with distance labels and a NIL vertex: same algorithm, different bookkeeping.
+\textbf{Orientation in the paper.} Non-matching edges girl$\to$boy, matching edges boy$\to$girl, $L_0$ is the set of free boys, $L_{i+1}$ the vertices with an edge into $L_i$; paths run from free girls to free boys, as in our figures. The textbook version (CLRS, Wikipedia) runs BFS from the free left vertices with distance labels and a NIL vertex. Same algorithm, different bookkeeping.
 
-\textbf{Theorem 2, as stated vs.\ as proved.} The paper states $|P'|\ge|P|+|P\cap P'|$; its proof gives $|P|+2|P\cap P'|$. Either form is enough for Corollaries 3 and 4.
+\textbf{Theorem 2: stated vs.\ proved.} The paper states $|P'|\ge|P|+|P\cap P'|$, but its proof gives $|P|+2|P\cap P'|$. Either is enough for Corollaries 3 and 4. The slide shows only $|P'|\ge|P|$.
 
-\textbf{Where each assumption is used.} Sections 1--9 (everything up to Algorithm A and the phase count) work for \emph{general} graphs; bipartiteness is used only in section 10, to orient the edges so that alternating paths become directed paths.
+\textbf{Where each assumption is used.} Sections 1--9 (everything up to Algorithm A and the count of phases) work for general graphs. Bipartiteness is used only in section 10, to orient the edges.
 
 \section*{Appendix B \quad Questions you may get}
 \begin{enumerate}[label=\textbf{Q\arabic*.},leftmargin=2.4em,itemsep=5pt]
-\item \emph{Why a maximal set of disjoint paths per phase and not a maximum one?} A maximal set already makes $\ell$ increase (section 8); a maximum set is a flow problem in itself.
-\item \emph{Does the processing order matter?} For what a phase finds, yes (in our example, taking $d$ first blocks $e$). For the bound, no.
-\item \emph{Why stop the BFS at the first level with a free girl?} Longer paths are not shortest, so they are not allowed in this phase.
-\item \emph{Where is bipartiteness used?} Only to orient the edges. Odd cycles (blossoms, Edmonds) break this; Micali--Vazirani handle them.
-\item \emph{How is this related to max-flow?} Add a source joined to the boys and a sink joined to the girls, all capacities 1. A phase is a Dinic blocking-flow phase.
-\item \emph{Is $\sqrt n$ tight in practice?} It is a worst-case bound; typical inputs need far fewer phases.
-\item \emph{Where does $m\ge n/2$ come from?} No isolated vertices (the paper's standing assumption).
-\item \emph{Why does the phase count use the matching size $s$ and not $n$?} Because $s\le n/2$: $2\lfloor\sqrt s\rfloor+2=O(\sqrt n)$.
+\item \emph{Why a maximal set of disjoint paths per phase and not a maximum one?} Maximal is enough to make $\ell$ grow (section 8). Maximum would be a flow problem of its own.
+\item \emph{Does the order matter?} For what a phase finds, yes: in our example, taking $d$ first blocks $e$. For the running time, no.
+\item \emph{Why does the BFS stop at the first level with a free girl?} Longer paths aren't shortest, so they aren't allowed in this phase.
+\item \emph{Where do we use bipartiteness?} Only to orient the edges. Odd cycles (blossoms, Edmonds) break that step; Micali--Vazirani handle them.
+\item \emph{How does this relate to max-flow?} Add a source joined to the boys and a sink joined to the girls, all capacities 1. A phase is a Dinic blocking-flow phase.
+\item \emph{Is $\sqrt n$ really needed in practice?} It's a worst-case bound. Typical inputs need far fewer phases.
+\item \emph{Where does $m\ge n/2$ come from?} No isolated vertices, the paper's standing assumption.
+\item \emph{Why is the phase count in terms of $s$, not $n$?} Because $s\le n/2$, so $2\lfloor\sqrt s\rfloor+2=O(\sqrt n)$.
 \end{enumerate}
 
 \section*{Appendix C \quad Slide map}
@@ -512,19 +514,19 @@ Thank you. Questions?
 \toprule
 \textbf{Slide} & \textbf{Notes} & \textbf{Content}\\
 \midrule
-1--3 & \S1 & title; the problem (graph and array); definitions, applications\\
-4 & \S2 & greedy gets stuck\\
-5 & \S3 & the chain-reaction repair\\
+1--3 & \S1 & title; the problem; three words\\
+4 & \S2 & greedy\\
+5 & \S3 & the repair\\
 6 & \S4 & augmenting paths, Lemma 1 \hfill (board)\\
 7 & \S5 & Theorem 1, Berge, $O(mn)$ \hfill (board)\\
-8 & \S6 & the plan: shortest paths\\
+8 & \S6 & take many at once?\\
 9 & \S7 & Theorem 2 \hfill (board)\\
 10--11 & \S8 & Corollaries 3 and 4, Algorithm A\\
-12 & \S9 & Theorem 3, Corollary 5 \hfill (board)\\
-13--16 & \S10 & orient the edges, layered graph, Algorithm B and its walkthrough\\
+12 & \S9 & how many phases? \hfill (board)\\
+13--16 & \S10 & orient, layered graph, Algorithm B, walkthrough\\
 17 & \S11 & the bound\\
 18 & \S12 & summary\\
-backup & \S5, 7--11 & Theorem 1, Corollary 2, correctness of Algorithm B, whole run, proofs of Theorem 2 and Corollary 4\\
+backup & \S5, 7--11 & Theorem 1, Corollary 2, why Algorithm B works, the whole run, proofs of Theorem 2 and Corollary 4\\
 \bottomrule
 \end{tabular}
 \end{center}
