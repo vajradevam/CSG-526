@@ -31,7 +31,7 @@
 }
 
 \newcommand{\curspk}{Viswanadha Bhanu Sriharsha}
-\newif\ifbackup \newcommand{\mainframes}{18}  % number of frames before \appendix
+\newif\ifbackup \newcommand{\mainframes}{19}  % number of frames before \appendix
 \newcommand{\curpart}{Problem}
 \setbeamertemplate{footline}{%
   \leavevmode\hbox to\paperwidth{%
@@ -49,32 +49,6 @@
 
 % "In plain words" box
 \newenvironment{plain}[1][In plain words]{\begin{exampleblock}{#1}}{\end{exampleblock}}
-
-% arrows for the directed layered graph
-\tikzset{darr/.style={-{Stealth[length=2mm]},line width=0.7pt,draw=black!45},
-         dmat/.style={-{Stealth[length=2.2mm]},line width=1.8pt,draw=black!80},
-         dred/.style={-{Stealth[length=2.2mm]},line width=2.2pt,draw=hkred}}
-
-% layered graph (paper's direction: arrows point from s towards t, i.e. to the left)
-% layer i drawn at x = 2.2*i ; M = {a1,b2,c4}
-\newcommand{\layerNodes}{%
-  \node[boy]  (Ld) at (0,0.8)  {$d$};
-  \node[boy]  (Le) at (0,-0.8) {$e$};
-  \node[girl] (L1) at (2.2,0.8)  {$1$};
-  \node[girl] (L2) at (2.2,-0.8) {$2$};
-  \node[boy]  (La) at (4.4,0.8)  {$a$};
-  \node[boy]  (Lb) at (4.4,-0.8) {$b$};
-  \node[girl] (L3) at (6.6,0.8)  {$3$};
-  \node[girl] (L5) at (6.6,-0.8) {$5$};
-}
-\newcommand{\layerLabels}{%
-  \node[layerlab] at (0,1.7)   {$L_0$};
-  \node[layerlab] at (2.2,1.7) {$L_1$};
-  \node[layerlab] at (4.4,1.7) {$L_2$};
-  \node[layerlab] at (6.6,1.7) {$L_3$};
-}
-
-
 
 
 \begin{document}
@@ -98,7 +72,9 @@
   {\large \textcolor{hkorange}{Aman Pathak} \ (2026PHXP0018G)\par}
   \vspace{1mm}
   {\normalsize CS-G526 \textperiodcentered\ November 2026\par}
-  \vspace{8mm}
+  \vspace{1mm}
+  {\normalsize Course instructor: Prof.\ Aniket Basu Roy\par}
+  \vspace{6mm}
   {\footnotesize\color{hkgrey}J.\,E.\ Hopcroft and R.\,M.\ Karp,
    \emph{An $n^{5/2}$ algorithm for maximum matchings in bipartite graphs},
    SIAM J.\ Comput.\ 2(4):225--231, 1973.\par}
@@ -259,7 +235,7 @@ A path $P=(v_1,v_2),(v_2,v_3),\dots,(v_{2k-1},v_{2k})$ is \textbf{augmenting} (r
 If $P$ is augmenting for $M$, then $M\oplus P$ is a matching and $|M\oplus P|=|M|+1$.
 \end{block}
 \vspace{1mm}
-\begin{plain}[Why? In plain words]
+\begin{plain}[Why it works]
 Interior vertices just swap partner, the two free ends gain one, nobody is double-booked. The path has one more edge outside $M$ than inside, so the size grows by one.
 \end{plain}
 \end{frame}
@@ -295,15 +271,15 @@ $M$ is maximum $\iff$ there is \textbf{no augmenting path} relative to $M$.\\
 % ======================================================================
 \renewcommand{\curspk}{Aman Pathak}
 \renewcommand{\curpart}{III. Shortest paths and phases}
-\begin{frame}{The plan: always use a \emph{shortest} augmenting path}
-\relax{\footnotesize\textbf{Where is the waste?} At the start every edge is an augmenting path, and $a1,b2,c4$ do not even touch: one search per path is too expensive. Can we take many at once?}\par\vspace{1mm}
-\begin{block}{The computation scheme (paper, \S2)}
-$M_0=\emptyset$, \quad $M_{i+1}=M_i\oplus P_i$, \quad where $P_i$ is a \textbf{shortest} augmenting path relative to $M_i$.
+\begin{frame}{Always use a shortest augmenting path}
+\relax{\footnotesize\textbf{Where is the waste?} At the start every edge is an augmenting path, and $a1,b2,c4$ do not even touch: one search per path is too expensive. Can we take many at once?}\par\vspace{0mm}
+\begin{block}{The scheme (paper, \S2)}
+Start with no pairs. Each round, take a \textbf{shortest} augmenting path $P_i$ and flip it: $M_{i+1}=M_i\oplus P_i$.
 \end{block}
 \begin{columns}[c]
 \column{0.5\textwidth}
 \centering
-\begin{tikzpicture}[x=0.85cm,y=0.4cm]
+\begin{tikzpicture}[x=0.8cm,y=0.3cm]
   \draw[->,thick] (0,0)--(6.2,0) node[right,font=\footnotesize]{$i$};
   \draw[->,thick] (0,0)--(0,5.8) node[above,font=\footnotesize]{$|P_i|$};
   \foreach \i/\h in {1/1,2/1,3/1,4/3,5/5}{
@@ -311,15 +287,15 @@ $M_0=\emptyset$, \quad $M_{i+1}=M_i\oplus P_i$, \quad where $P_i$ is a \textbf{s
     \node[font=\footnotesize] at (\i,-0.5) {$P_{\the\numexpr\i-1\relax}$};
     \node[font=\footnotesize,above] at (\i,\h) {$\h$};}
 \end{tikzpicture}\\[-1mm]
-{\footnotesize Example: the five augmentations $a1,b2,c4,d1a3,e1d2b5$.}
+{\footnotesize Our running example: the lengths of the five paths we use.}
 \column{0.48\textwidth}
 \small\textbf{We will prove three things:}
 \begin{enumerate}\setlength\itemsep{3pt}
-  \item The lengths $|P_i|$ \textbf{never decrease}.
-  \item Paths of the \textbf{same length} are vertex-disjoint, so they can all be found \emph{together}.
-  \item There are only $O(\sqrt n)$ \textbf{distinct} lengths.
+  \item The lengths $|P_i|$ \textbf{never go down}.
+  \item Paths of the \textbf{same length} never share a vertex, so we can find them \emph{together}.
+  \item There are only about $\sqrt n$ \textbf{different} lengths.
 \end{enumerate}
-\textcolor{hkred}{\textbf{Payoff:} one length class = one \emph{phase}.}
+\textcolor{hkred}{All paths of one length together form one \emph{phase}.}
 \end{columns}
 \end{frame}
 
@@ -327,15 +303,25 @@ $M_0=\emptyset$, \quad $M_{i+1}=M_i\oplus P_i$, \quad where $P_i$ is a \textbf{s
 % 11  THEOREM 2
 % ======================================================================
 \begin{frame}{Theorem 2: shortest paths never get shorter}
+\begin{columns}[c]
+\column{0.56\textwidth}
 \begin{block}{Theorem 2}
 Let $P$ be a shortest augmenting path for $M$ and $P'$ an augmenting path for $M\oplus P$. Then $\ |P'|\ \ge\ |P|+|P\cap P'|.$
 \end{block}
-\begin{plain}[In plain words]
-Flipping a shortest path can only push the remaining augmenting paths \emph{further away}, never closer. If $P'$ reuses edges of $P$, it is even longer.
-\end{plain}
-\begin{alertblock}{Why we want it}
-Along the run the lengths $|P_0|,|P_1|,\dots$ never decrease, so they fall into blocks of equal length. Next: paths in one block are disjoint, so a whole block can be found at once.
-\end{alertblock}
+\small
+After we flip a shortest augmenting path, every augmenting path that is left is at least as long as before. If it reuses edges of $P$, it is longer.\\[3mm]
+So the lengths $|P_0|,|P_1|,\dots$ never go down, and they come in blocks of equal length. Next we show that the paths inside one block share no vertex, so a whole block can be found at once.
+\column{0.42\textwidth}
+\centering
+\begin{tikzpicture}[scale=0.68]
+  \exnodes\exedges
+  \draw[line width=3.4pt,hkblue!70] (xe)--(y1)--(xd)--(y2)--(xb)--(y5);
+  \draw[line width=1.5pt,hkred] (xd)--(y1)--(xa)--(y3);
+  \node[font=\scriptsize,hkred,anchor=east] at (-0.5,2.2) {$P$};
+  \node[font=\scriptsize,hkblue,anchor=east] at (-0.5,-1.1) {$P'$};
+\end{tikzpicture}\\[1mm]
+{\footnotesize Example: $M=\{a1,b2,c4\}$, $P=d1a3$ ($|P|=3$). After the flip, $P'=e1d2b5$ has $|P'|=5\ge 3+|P\cap P'|=3+1$: the shared edge is $d1$.}
+\end{columns}
 \end{frame}
 
 % ======================================================================
@@ -343,242 +329,306 @@ Along the run the lengths $|P_0|,|P_1|,\dots$ never decrease, so they fall into 
 % ======================================================================
 \begin{frame}{Corollaries 3 and 4: blocks of equal length}
 \begin{columns}[T]
-\column{0.5\textwidth}
+\column{0.58\textwidth}
 \begin{block}{Corollary 3}
-$|P_i|\le|P_{i+1}|$\quad {\footnotesize (Thm 2 with $P=P_i$, $P'=P_{i+1}$)}
+The lengths never go down: $|P_i|\le|P_{i+1}|$.\hfill{\scriptsize (Thm 2, $P=P_i$, $P'=P_{i+1}$)}
 \end{block}
 \begin{block}{Corollary 4}
-If $|P_i|=|P_j|$, then $P_i$ and $P_j$ are \textbf{vertex-disjoint}.
+If $|P_i|=|P_j|$, then $P_i$ and $P_j$ share no vertex.
 \end{block}
-{\footnotesize \emph{Idea.} Equal length forces $|P_i\cap P_j|=0$ in Thm 2: no shared \emph{edge}. A shared \emph{vertex} would force a shared \emph{matching edge}. (Backup.)}
-\column{0.48\textwidth}
+\footnotesize\textbf{Why Corollary 4 holds.} For equal lengths, Theorem 2 says the two paths share no edge. Sharing a vertex would force sharing a matched edge: after $P_i$ is flipped, each of its vertices is matched along an edge of $P_i$, and a later path through that vertex has to use that edge.\\[1mm]
+\textbf{What we get.} The paths in a block do not touch, so we can find them all at once, in any order. That is one phase.
+\column{0.4\textwidth}
 \centering
-\begin{tikzpicture}[x=0.85cm,y=0.38cm]
-  \draw[->,thick] (0,0)--(6.2,0);
-  \draw[->,thick] (0,0)--(0,5.8);
-  \foreach \i/\h/\c in {1/1/hkblue,2/1/hkblue,3/1/hkblue,4/3/hkorange,5/5/hkgreen}{
-    \fill[\c!60] (\i-0.35,0) rectangle (\i+0.35,\h);}
-  \draw[decorate,decoration={brace,mirror,amplitude=4pt}] (0.6,-0.4)--(3.4,-0.4) node[midway,below=4pt,font=\footnotesize]{phase 1};
-  \node[font=\footnotesize,below] at (4,-0.5) {2};
-  \node[font=\footnotesize,below] at (5,-0.5) {3};
-\end{tikzpicture}
+\begin{tikzpicture}[x=0.95cm,y=0.9cm]
+  \node[font=\scriptsize\bfseries] at (1.5,1.55) {before flipping $P_i$};
+  \node[boy] (a1) at (0,0.8) {$x_1$}; \node[girl] (b1) at (1,0.8) {$y_1$};
+  \node[boy] (c1) at (2,0.8) {$x_2$}; \node[girl] (d1) at (3,0.8) {$y_2$};
+  \draw[lnon] (a1)--(b1); \draw[lmat] (b1)--(c1); \draw[lnon] (c1)--(d1);
+  \freering{a1}\freering{d1}
+  \node[font=\scriptsize\bfseries] at (1.5,-0.25) {after flipping $P_i$};
+  \node[boy] (a2) at (0,-1.0) {$x_1$}; \node[girl] (b2) at (1,-1.0) {$y_1$};
+  \node[boy] (c2) at (2,-1.0) {$x_2$}; \node[girl] (d2) at (3,-1.0) {$y_2$};
+  \draw[lmat] (a2)--(b2); \draw[lnon] (b2)--(c2); \draw[lmat] (c2)--(d2);
+  \node[boy] (o) at (3,-2.4) {$x'$};
+  \draw[lred,dashed] (o)--(d2);
+  \draw[line width=4pt,hkred!35] (c2)--(d2);
+  \node[font=\scriptsize,hkred,anchor=west] at (3.35,-1.7) {$P_j$};
+\end{tikzpicture}\\[1mm]
+{\footnotesize A later path $P_j$ through $y_2$ must use its matched edge $x_2y_2$, which belongs to $P_i$. That is a shared edge, so $|P_j|>|P_i|$.}
 \end{columns}
-\begin{plain}[So]
-{\footnotesize Within a block of equal length all paths are disjoint, hence \emph{all augmenting for the matching at the start of the block}: find them in one go, \textbf{in any order}.}
-\end{plain}
 \end{frame}
 
 % ======================================================================
 % 13  ALGORITHM A
 % ======================================================================
 \begin{frame}{Algorithm A: maximum matching by phases}
-\begin{block}{Algorithm A (paper)}
-\textbf{Step 0.} $M\gets\emptyset$.\\
-\textbf{Step 1.} Let $\ell(M)$ be the length of a shortest augmenting path for $M$. Find a \textbf{maximal} set of vertex-disjoint augmenting paths $\{Q_1,\dots,Q_t\}$ \textbf{of length $\ell(M)$}. Halt if none exist.\\
-\textbf{Step 2.} $M\gets M\oplus Q_1\oplus\cdots\oplus Q_t$; go to Step 1.
-\end{block}
 \begin{columns}[T]
-\column{0.5\textwidth}
-\small
-\begin{itemize}\setlength\itemsep{3pt}
-  \item \textbf{Maximal}, not maximum: no further path can be added. A different choice might give more; that is fine.
-  \item Correct: Berge. It stops only when no augmenting path exists.
-\end{itemize}
-\column{0.48\textwidth}
-\small
-\begin{alertblock}{After a phase, $\ell$ strictly grows}
-A leftover path of the same length would, by Corollary 4, be disjoint from all $Q_i$, so it could have been added: contradiction with maximality.
+\column{0.6\textwidth}
+\begin{block}{Algorithm A (paper)}
+\footnotesize
+\textbf{Step 0.} Start with no pairs: $M\gets\emptyset$.\\
+\textbf{Step 1.} Let $\ell$ be the length of a shortest augmenting path. Find a \textbf{maximal} set $\{Q_1,\dots,Q_t\}$ of augmenting paths of length $\ell$ that share no vertex. If there is none, stop.\\
+\textbf{Step 2.} Flip all of $Q_1,\dots,Q_t$ in $M$. Go to Step 1.
+\end{block}
+\footnotesize
+\textbf{Maximal}, not maximum: no path can be added, though another choice might give more. Correct (Berge): it stops only when no augmenting path is left.\par\vspace{1mm}
+\begin{alertblock}{Why $\ell$ grows after a phase}
+\footnotesize A leftover path of the same length would, by Corollary 4, share no vertex with any $Q_i$. We could have added it, but the set was maximal. So the next shortest path is longer.
 \end{alertblock}
+\column{0.38\textwidth}
+\centering
+\begin{tikzpicture}[scale=0.62]
+  \exnodes\exedges
+  \draw[lred] (xa)--(y1); \draw[lred] (xb)--(y2); \draw[lred] (xc)--(y4);
+  \usedv{xa}\usedv{xb}\usedv{xc}\usedv{y1}\usedv{y2}\usedv{y4}
+\end{tikzpicture}\\[0mm]
+{\scriptsize Phase 1: $\{a1,b2,c4\}$ is maximal. Every other edge ($a3,b5,c5,d1,d2,e1$) touches a used (shaded) vertex, so none can be added.}
 \end{columns}
-{\small\textbf{Still to show:} (1) the number of phases is $O(\sqrt n)$ \; (2) one Step 1 costs $O(m+n)$ in the bipartite case.}
 \end{frame}
 
 % ======================================================================
 % 15  THEOREM 3 / COR 5
 % ======================================================================
-\begin{frame}{Theorem 3 and Corollary 5: $O(\sqrt n)$ phases}
-\begin{block}{Theorem 3 / Corollary 5}
-If a maximum matching has size $s$, the lengths $|P_0|,|P_1|,\dots$ take at most $2\lfloor\sqrt s\rfloor+2$ distinct values: Algorithm A needs at most $2\lfloor\sqrt s\rfloor+2$ phases.
-\end{block}
-\centering
-\begin{tikzpicture}[x=0.95cm,y=1cm]
-  \fill[hkblue!15] (0,0) rectangle (5,0.9);
-  \fill[hkorange!22] (5,0) rectangle (10,0.9);
-  \node[font=\small,align=center] at (2.5,0.45) {$|M|<r=\lfloor s-\sqrt s\rfloor$};
-  \node[font=\small,align=center] at (7.5,0.45) {$|M|\ge r$};
-\end{tikzpicture}
-\raggedright
+\begin{frame}{Why only about $\sqrt n$ phases?}
 \begin{columns}[T]
-\column{0.5\textwidth}
-\textbf{Early} ($|M|<r$): Corollary 2 gives $\ell\le2\lfloor\sqrt s\rfloor+1$. Lengths are odd and strictly increasing: at most $\lfloor\sqrt s\rfloor+1$ phases.
-\column{0.48\textwidth}
-\textbf{Late} ($|M|\ge r$): only $s-r\le\lceil\sqrt s\rceil$ edges are missing; each phase gains $\ge1$.
+\column{0.52\textwidth}
+\small
+Algorithm A stops after $O(\sqrt n)$ phases (Theorem 3, Corollary 5; the paper's exact count is $2\lfloor\sqrt s\rfloor+2$).
+\begin{enumerate}\setlength\itemsep{4pt}
+  \item Each phase makes the shortest path \textbf{at least 2 longer}. After $\sqrt n$ phases it has length $\ge 2\sqrt n$.
+  \item The missing pairs give augmenting paths with no common vertex (Theorem 1), each with $\ge2\sqrt n$ vertices. Only $n$ vertices exist, so at most $n/(2\sqrt n)=\tfrac12\sqrt n$ paths fit.
+  \item Each phase adds at least one pair, so at most $\tfrac12\sqrt n$ more phases. \textbf{Total} $\le \tfrac32\sqrt n$.
+\end{enumerate}
+\column{0.46\textwidth}
+\centering
+{\footnotesize\textbf{Step 1: the shortest length keeps growing}}\\[1mm]
+\begin{tikzpicture}[x=0.55cm,y=0.17cm]
+  \draw[->,thick] (0,0)--(7.4,0) node[right,font=\scriptsize]{phase};
+  \draw[->,thick] (0,0)--(0,13) node[above,font=\scriptsize]{length};
+  \foreach \i/\h in {1/1,2/3,3/5,4/7,5/9}{
+    \fill[hkblue!60] (\i-0.3,0) rectangle (\i+0.3,\h);
+    \node[font=\scriptsize,above] at (\i,\h) {$\h$};
+    \node[font=\scriptsize,below] at (\i,0) {$\i$};}
+  \node[font=\scriptsize] at (6,2) {$\cdots$};
+  \fill[hkorange!70] (6.7,0) rectangle (7.3,12);
+  \node[font=\scriptsize,above] at (7,12) {$\ge2\sqrt n$};
+  \node[font=\scriptsize,below] at (7,0) {$\sqrt n$};
+\end{tikzpicture}\\[3mm]
+{\footnotesize\textbf{Step 2: only few long paths fit in $n$ vertices}}\\[1mm]
+\begin{tikzpicture}[x=0.62cm,y=0.5cm]
+  \draw[thick] (0,0) rectangle (8,0.9);
+  \foreach \i in {0,1,2,3,4}{
+    \fill[hkorange!30] (1.6*\i+0.04,0.04) rectangle (1.6*\i+1.56,0.86);
+    \node[font=\scriptsize] at (1.6*\i+0.8,0.45) {$\ge2\sqrt n$};}
+  \draw[decorate,decoration={brace,mirror,amplitude=3pt}] (0,-0.15)--(8,-0.15) node[midway,below=3pt,font=\scriptsize]{$n$ vertices};
+\end{tikzpicture}\\[1mm]
+{\scriptsize at most $\tfrac12\sqrt n$ paths}
 \end{columns}
-\vspace{2mm}
-{\footnotesize\textbf{Intuition:} early on lengths are \emph{small}, so few distinct lengths; late, only a \emph{few} augmentations are left. $\sqrt n$ is where the two meet.}
 \end{frame}
 
 % ======================================================================
 % 16  BIPARTITE CASE: ORIENT EDGES
 % ======================================================================
 \renewcommand{\curpart}{IV. One phase in $O(m+n)$}
-\begin{frame}{Implementing a phase (\S3): orient the edges}
-\begin{columns}[c]
-\column{0.5\textwidth}
+\begin{frame}{Phase 1: $M=\emptyset$}
+\relax{\footnotesize\textbf{A phase:} BFS from the free vertices of $X$ $\to$ DFS from $F$ (free vertices of $Y$ reached) $\to$ flip.}\par\vspace{1mm}
+\begin{columns}[T]
+\column{0.23\textwidth}
 \centering
-\begin{tikzpicture}[scale=1.0]
-  \exnodes
-  % unoriented (stage 1)
-  \only<1>{\exedges \draw[mat] (xa)--(y1); \draw[mat] (xb)--(y2); \draw[mat] (xc)--(y4);}
-  % oriented (stage 2+)
-  \only<2->{%
-    \draw[dmat] (xa)--(y1); \draw[dmat] (xb)--(y2); \draw[dmat] (xc)--(y4);
-    \draw[darr] (y3)--(xa); \draw[darr] (y5)--(xb); \draw[darr] (y5)--(xc);
-    \draw[darr] (y1)--(xd); \draw[darr] (y2)--(xd); \draw[darr] (y1)--(xe);}
-  \only<3->{\draw[dred] (y3)--(xa); \draw[dred] (xa)--(y1); \draw[dred] (y1)--(xd);}
-  \freering{xd}\freering{xe}\freering{y3}\freering{y5}
+\begin{tikzpicture}[scale=0.55]
+  \only<1-2>{\exStateA}\only<3>{\exStateB}
+\end{tikzpicture}\\[1mm]
+{\footnotesize \only<1-2>{$M=\emptyset$}\only<3>{$M=\{a1,b2,c4\}$}}
+\column{0.37\textwidth}
+\centering
+\begin{tikzpicture}[x=1cm,y=1cm,scale=0.85]
+  \phOneNodes \phOneEdges
+  \only<2->{\phOneDFS}
 \end{tikzpicture}
-\column{0.48\textwidth}
-Fix $M=\{a1,b2,c4\}$.
-\begin{enumerate}\setlength\itemsep{6pt}
-  \item<1-> The goal: find a maximal set of disjoint shortest augmenting paths.
-  \item<2-> \textbf{Direct the edges:}\\ edges \emph{not} in $M$: girl $\to$ boy;\\ edges in $M$: boy $\to$ girl.
-  \item<3-> Now an augmenting path is a \textbf{directed path from a free girl to a free boy}, e.g.\ $3\to a\to1\to d$.
-\end{enumerate}
-\onslide<3->{\begin{plain}[Why bipartite matters]
-{\small Alternating paths become ordinary directed paths, so plain graph search finds them.}
-\end{plain}}
+\column{0.38\textwidth}
+\footnotesize
+\setlength\leftmargini{1.1em}
+\only<1>{\textbf{BFS}
+\begin{itemize}\setlength\itemsep{2pt}
+ \item Nothing is matched, so every vertex of $X$ is free: level $0$.
+ \item Unmatched edges lead to all of $Y$: level $1$.
+ \item Level $1$ has free vertices: stop. $F=\{1,2,3,4,5\}$.
+\end{itemize}}%
+\only<2>{\textbf{DFS from each vertex of $F$}\\
+{\scriptsize$\leftarrow$ up to a neighbour on the level above;\ $\Rightarrow$ forced step along a matched edge}
+\begin{itemize}\setlength\itemsep{2pt}
+ \item $1\leftarrow a$. $a$ is free: path $a1$. Delete $a,1$.
+ \item $2\leftarrow b$. Free: path $b2$.
+ \item $3\leftarrow a$. $a$ is deleted: dead end.
+ \item $4\leftarrow c$. Free: path $c4$.
+ \item $5\leftarrow b,c$. Both deleted: dead end.
+\end{itemize}}%
+\only<3>{\textbf{Update: $M\leftarrow M\oplus P$}
+\begin{itemize}\setlength\itemsep{2pt}
+ \item $P=\{a1,b2,c4\}$ (the three paths).
+ \item $M=\emptyset$, so nothing cancels: all three edges are added.
+ \item $M=\{a1,b2,c4\}$, size $3$.
+\end{itemize}}%
 \end{columns}
 \end{frame}
 
-% ======================================================================
-% 17  LAYERED GRAPH
-% ======================================================================
-\begin{frame}{The layered graph $\widetilde G$}
-\begin{columns}[c]
-\column{0.64\textwidth}
+\begin{frame}{Phase 2: $M=\{a1,b2,c4\}$}
+\relax{\footnotesize\textbf{A phase:} BFS from the free vertices of $X$ $\to$ DFS from $F$ (free vertices of $Y$ reached) $\to$ flip.}\par\vspace{1mm}
+\begin{columns}[T]
+\column{0.23\textwidth}
 \centering
-\begin{tikzpicture}[scale=0.85]
-  \layerNodes
-  \only<1->{\node[layerlab] at (0,1.7) {$L_0$};}
-  \only<2->{\node[layerlab] at (2.2,1.7) {$L_1$};}
-  \only<3->{\node[layerlab] at (4.4,1.7) {$L_2$};}
-  \only<4->{\node[layerlab] at (6.6,1.7) {$L_3$};}
-  \freering{Ld}\freering{Le}\freering{L3}\freering{L5}
-  \only<2->{\draw[darr] (L1)--(Ld); \draw[darr] (L1)--(Le); \draw[darr] (L2)--(Ld);}
-  \only<3->{\draw[dmat] (La)--(L1); \draw[dmat] (Lb)--(L2);}
-  \only<4->{\draw[darr] (L3)--(La); \draw[darr] (L5)--(Lb);}
-  \only<5->{\node[draw,rounded corners,fill=hkgrey!15,inner sep=3pt,font=\footnotesize] (S) at (8.7,0) {$s$};
-            \node[draw,rounded corners,fill=hkgrey!15,inner sep=3pt,font=\footnotesize] (T) at (-1.9,0) {$t$};
-            \draw[darr] (S)--(L3); \draw[darr] (S)--(L5); \draw[darr] (Ld)--(T); \draw[darr] (Le)--(T);}
-  \only<5->{\node[font=\footnotesize,text=hkgrey] at (3.3,-1.9) {all arrows point left: from $s$ to $t$};}
+\begin{tikzpicture}[scale=0.55]
+  \only<1-2>{\exStateB}\only<3>{\exStateC}
+\end{tikzpicture}\\[1mm]
+{\footnotesize \only<1-2>{$M=\{a1,b2,c4\}$}\only<3>{$M=\{d1,a3,b2,c4\}$}}
+\column{0.37\textwidth}
+\centering
+\begin{tikzpicture}[x=1cm,y=1cm,scale=0.85]
+  \phTwoNodes \phTwoEdges
+  \only<2->{\phTwoDFS}
 \end{tikzpicture}
-\column{0.34\textwidth}
-\small
-\textbf{BFS from the free boys.}\\[2pt]
-\only<1->{$L_0$ = free boys.\\}
-\only<2->{$L_{i+1}$ = vertices with an edge into $L_i$, not seen before.\\}
-\only<4->{Stop at $i^*$ = first level that contains a \textbf{free girl}.\\[4pt]}
-\only<5->{Keep only edges between consecutive levels, add $s\to$ free girls, free boys $\to t$.\\[4pt]
-\textbf{Properties:} acyclic; shortest augmenting paths $\longleftrightarrow$ paths $s\to t$, all of length $i^*$.}
+\column{0.38\textwidth}
+\footnotesize
+\setlength\leftmargini{1.1em}
+\only<1>{\textbf{BFS}
+\begin{itemize}\setlength\itemsep{2pt}
+ \item Level $0$: the free vertices of $X$, $d$ and $e$.
+ \item Level $1$: $1,2$, by unmatched edges.
+ \item Level $2$: $a,b$, by matched edges.
+ \item Level $3$: $3,5$, by unmatched edges. They are free: stop. $F=\{3,5\}$.
+\end{itemize}}%
+\only<2>{\textbf{DFS from each vertex of $F$}\\
+{\scriptsize$\leftarrow$ up to a neighbour on the level above;\ $\Rightarrow$ forced step along a matched edge}
+\begin{itemize}\setlength\itemsep{3pt}
+ \item $3\leftarrow a\Rightarrow 1\leftarrow d$. $d$ is free: path $d1a3$. Delete $d,1,a,3$.
+ \item $5\leftarrow b\Rightarrow 2\leftarrow d$. $d$ is deleted: dead end. Delete $2,b,5$.
+\end{itemize}}%
+\only<3>{\textbf{Update: $M\leftarrow M\oplus P$}
+\begin{itemize}\setlength\itemsep{2pt}
+ \item $P=\{d1,\ a1,\ a3\}$ and $M=\{a1,b2,c4\}$.
+ \item $a1$ is in both: it \textbf{cancels} (leaves $M$).
+ \item $d1,a3$ are only in $P$: \textbf{added}.
+ \item $b2,c4$ are only in $M$: they \textbf{stay}.
+ \item $M=\{d1,a3,b2,c4\}$, size $4$.
+\end{itemize}}%
 \end{columns}
 \end{frame}
 
+\begin{frame}{Phase 3: $M=\{d1,a3,b2,c4\}$}
+\relax{\footnotesize\textbf{A phase:} BFS from the free vertices of $X$ $\to$ DFS from $F$ (free vertices of $Y$ reached) $\to$ flip.}\par\vspace{1mm}
+\begin{columns}[T]
+\column{0.23\textwidth}
+\centering
+\begin{tikzpicture}[scale=0.55]
+  \only<1-2>{\exStateC}\only<3>{\exStateD}
+\end{tikzpicture}\\[1mm]
+{\footnotesize \only<1-2>{$M=\{d1,a3,b2,c4\}$}\only<3>{$M=\{e1,d2,b5,a3,c4\}$}}
+\column{0.37\textwidth}
+\centering
+\begin{tikzpicture}[x=1cm,y=1cm,scale=0.9]
+  \phThreeNodes \phThreeEdges
+  \only<2->{\phThreeDFS}
+\end{tikzpicture}
+\column{0.38\textwidth}
+\footnotesize
+\setlength\leftmargini{1.1em}
+\only<1>{\textbf{BFS}
+\begin{itemize}\setlength\itemsep{2pt}
+ \item Level $0$: the only free vertex of $X$, $e$.
+ \item Then $1$ (unmatched), $d$ (matched), $2$ (unmatched), $b$ (matched), $5$ (unmatched).
+ \item Level $5$: $5$ is free: stop. $F=\{5\}$.
+\end{itemize}}%
+\only<2>{\textbf{DFS from each vertex of $F$}\\
+{\scriptsize$\leftarrow$ up to a neighbour on the level above;\ $\Rightarrow$ forced step along a matched edge}
+\begin{itemize}\setlength\itemsep{3pt}
+ \item $5\leftarrow b\Rightarrow 2\leftarrow d\Rightarrow 1\leftarrow e$. $e$ is free: path $e1d2b5$.
+\end{itemize}}%
+\only<3>{\textbf{Update: $M\leftarrow M\oplus P$}
+\begin{itemize}\setlength\itemsep{2pt}
+ \item $P=\{e1,\ d1,\ d2,\ b2,\ b5\}$ and $M=\{d1,a3,b2,c4\}$.
+ \item $d1,b2$ are in both: they \textbf{cancel}.
+ \item $e1,d2,b5$ are only in $P$: \textbf{added}.
+ \item $a3,c4$ are only in $M$: they \textbf{stay}.
+ \item $M=\{e1,d2,b5,a3,c4\}$: perfect matching. The next BFS has no free vertex of $X$: stop.
+\end{itemize}}%
+\end{columns}
+\end{frame}
+
+
+
 % ======================================================================
-% 18  ALGORITHM B
+% 16  DFS WITH DELETION (ALGORITHM B)
 % ======================================================================
-\begin{frame}{Algorithm B: a maximal set of disjoint $s$--$t$ paths by DFS}
+\begin{frame}{DFS with deletion (the paper's Algorithm B)}
 \begin{columns}[T]
 \column{0.58\textwidth}
-\begin{block}{Data structures}
+\begin{block}{Run a DFS from every vertex of $F$}
 \footnotesize
-$\mathrm{LIST}(u)$: out-neighbours of $u$ in $\widetilde G$.\quad STACK: current path.\quad $B$: vertices visited, \emph{never to be reused}.\quad PRINT: pop the whole stack and print it as a path.
+$F$ = free vertices of $Y$ at the last level. \textbf{Deleted} vertices are never used again.
 \end{block}
 \begin{algorithm}[H]
 \footnotesize
 \SetAlgoLined
 \SetAlgoNoEnd
 \SetInd{0.6em}{0.8em}
-PUSH $s$\;
-\While{STACK $\neq\emptyset$}{
-  \While{LIST(TOP) $\neq\emptyset$}{
-    FIRST $\gets$ first element of LIST(TOP); \textbf{DELETE} it\;
-    \If{FIRST $\notin B$}{
-      PUSH FIRST\;
-      \lIf{TOP $=t$}{PRINT path; PUSH $s$}\lElse{$B\gets B\cup\{\text{TOP}\}$}
-    }
+\textbf{DFS($y$):}\;
+\ForEach{edge $\{x,y\}$ with $x$ on the previous level, $x$ not deleted}{
+  \If{$x$ is free \textbf{or} DFS(partner of $x$) succeeds}{
+    add $x,y$ to the path\;
+    delete $x$ and $y$\;
+    \KwRet success\;
   }
-  POP\;
+  delete $x$\;
 }
+delete $y$\;
+\KwRet failure\;
 \end{algorithm}
 \column{0.40\textwidth}
 \small
-\begin{plain}[The idea]
-A depth-first walk from $s$. Every edge we look at is \textbf{deleted} at once: it either becomes part of the current path, or it can never help again. A vertex that has been visited stays in $B$: it is on a printed path, or it is a dead end.
+\begin{plain}[Why delete?]
+We want a maximal set of paths with no common vertex. A plain DFS finds only one path, and restarting it would re-explore the same dead ends. So we \textbf{delete} every vertex and edge we use, and every one that turns out to lead nowhere.
 \end{plain}
 \vspace{1mm}
-{\small Each iteration of the inner loop deletes an edge; each outer iteration pops a vertex. So the work is proportional to \#edges + \#vertices.}
-\end{columns}
-\end{frame}
-
-% ======================================================================
-% 19  ALGORITHM B WALKTHROUGH
-% ======================================================================
-\begin{frame}{Algorithm B on our example (the layered graph of phase 2)}
-\begin{columns}[c]
-\column{0.68\textwidth}
-\centering
-\begin{tikzpicture}[scale=0.85]
-  \layerNodes
-  \node[draw,rounded corners,fill=hkgrey!15,inner sep=3pt,font=\footnotesize] (S) at (8.7,0) {$s$};
-  \node[draw,rounded corners,fill=hkgrey!15,inner sep=3pt,font=\footnotesize] (T) at (-1.9,0) {$t$};
-  \draw[darr] (L1)--(Ld); \draw[darr] (L1)--(Le); \draw[darr] (L2)--(Ld);
-  \draw[dmat] (La)--(L1); \draw[dmat] (Lb)--(L2);
-  \draw[darr] (L3)--(La); \draw[darr] (L5)--(Lb);
-  \draw[darr] (S)--(L3); \draw[darr] (S)--(L5); \draw[darr] (Ld)--(T); \draw[darr] (Le)--(T);
-  % stage 1/2: walking
-  \only<1>{\draw[dred] (S)--(L3);}
-  \only<2>{\draw[dred] (S)--(L3); \draw[dred] (L3)--(La); \draw[dred] (La)--(L1);}
-  \only<3>{\draw[dred] (S)--(L3); \draw[dred] (L3)--(La); \draw[dred] (La)--(L1); \draw[dred] (L1)--(Ld); \draw[dred] (Ld)--(T);}
-  \only<4->{\draw[dred] (S)--(L3); \draw[dred] (L3)--(La); \draw[dred] (La)--(L1); \draw[dred] (L1)--(Ld); \draw[dred] (Ld)--(T);}
-  \only<4->{\draw[hkorange,line width=2.2pt,-{Stealth[length=2.2mm]}] (S)--(L5); \draw[hkorange,line width=2.2pt,-{Stealth[length=2.2mm]}] (L5)--(Lb); \draw[hkorange,line width=2.2pt,-{Stealth[length=2.2mm]}] (Lb)--(L2);}
-  \only<5>{\draw[hkred,thick] ($(L2)+(-0.3,-0.3)$)--($(L2)+(0.3,0.3)$) ($(L2)+(-0.3,0.3)$)--($(L2)+(0.3,-0.3)$);
-           \draw[hkred,thick] ($(Le)+(-0.3,-0.3)$)--($(Le)+(0.3,0.3)$) ($(Le)+(-0.3,0.3)$)--($(Le)+(0.3,-0.3)$);}
-\end{tikzpicture}\\[1mm]
-\begin{tikzpicture}
-  \node[draw,rounded corners,fill=hkblue!5,font=\footnotesize,text width=7.4cm,align=left,inner sep=4pt] {%
-    \only<1>{\textbf{STACK:} $s,\,3$\quad ($B=\{3\}$)}%
-    \only<2>{\textbf{STACK:} $s,\,3,\,a,\,1$\quad ($B=\{3,a,1\}$)}%
-    \only<3>{\textbf{STACK:} $s,3,a,1,d,t$ \;$\Rightarrow$\; \textbf{PRINT} $s\,3\,a\,1\,d\,t$; push $s$ again}%
-    \only<4>{\textbf{STACK:} $s,\,5,\,b,\,2$\quad $2$'s only edge goes to $d\in B$: skip and delete}%
-    \only<5>{$2$ and then $b,5,s$ are popped. STACK empty: \textbf{STOP}.}%
-  };
-\end{tikzpicture}
-\column{0.30\textwidth}
-\footnotesize
-\begin{itemize}\setlength\itemsep{5pt}
-  \item<1-> Start at $s$, follow the first edge of each LIST.
-  \item<3-> Reached $t$: one augmenting path $d1a3$ is output. Its vertices stay in $B$.
-  \item<4-> Next try: $s,5,b,2$ is blocked by the used $d$: a dead end.
-  \item<5-> Output: \textbf{one} path. Maximal: nothing else fits (e.g.\ $e$ needs $1$, used).
-\end{itemize}
+{\small Each edge is looked at once and each vertex deleted once, so the work is about (number of edges + number of vertices).}
 \end{columns}
 \end{frame}
 
 % ======================================================================
 % 22  PUTTING IT TOGETHER
 % ======================================================================
-\begin{frame}{Putting it together: the Hopcroft--Karp bound}
-\begin{block}{Running time}
-\[
-  \underbrace{2\lfloor\sqrt s\rfloor+2}_{\text{phases (Cor.\,5)}}\ \times\ \underbrace{O(m+n)}_{\text{one phase (BFS + Algorithm B)}}\ =\ O\big((m+n)\sqrt n\big)
-\]
+\begin{frame}{The Hopcroft--Karp bound}
+\begin{columns}[T]
+\column{0.31\textwidth}
+\begin{block}{1. How many phases?}
+\footnotesize
+$\approx\sqrt n$ phases until the shortest path has length $\ge 2\sqrt n$, then at most $\tfrac12\sqrt n$ more.\\[1mm]
+Total $\le 1.5\sqrt n$, so $O(\sqrt n)$.\\
+{\scriptsize (Paper: $2\lfloor\sqrt s\rfloor+2$.)}
 \end{block}
+\column{0.34\textwidth}
+\begin{block}{2. Cost of one phase}
+\footnotesize
+\textbf{BFS:} each edge is looked at once: $O(m+n)$.\\
+\textbf{DFS with deletion:} an edge is followed once, then its vertex is deleted or used: $O(m+n)$.\\
+Flipping the paths is $O(n)$.
+\end{block}
+\column{0.31\textwidth}
+\begin{block}{3. Multiply}
+\footnotesize
+$O(\sqrt n)\times O(m+n)$\\[1mm]
+$=O\big((m+n)\sqrt n\big)$\\[1mm]
+No isolated vertices: $m\ge n/2$, so
+\[\boxed{O(m\sqrt n)}\]
+\end{block}
+\end{columns}
+\vspace{1mm}
 \begin{columns}[T]
 \column{0.5\textwidth}
-\begin{itemize}\setlength\itemsep{5pt}
-  \item No isolated vertices: $m\ge n/2$, so this is $O(m\sqrt n)$.
+\small
+\begin{itemize}\setlength\itemsep{4pt}
   \item Dense case $m\sim n^2$: $O(n^{5/2})$, the title of the paper.
+  \item Greedy repair did $n$ augmentations at $O(m)$ each: $O(mn)$. Now: $\sqrt n$ phases at $O(m)$ each.
 \end{itemize}
 \column{0.48\textwidth}
 \begin{tabular}{lrr}
@@ -590,207 +640,29 @@ $n=10^6,\ m=10^7$ & $10^{13}$ & $10^{10}$\\
 \bottomrule
 \end{tabular}
 \end{columns}
-\vspace{2mm}
-\begin{alertblock}{The three ideas of Hopcroft--Karp}
-\textbf{(1)} Berge: augmenting paths are all we need.\quad
-\textbf{(2)} Shortest paths: lengths never decrease, so equal-length paths are disjoint and form phases.\quad
-\textbf{(3)} Counting: $O(\sqrt n)$ phases, each $O(m+n)$ by BFS layering and DFS with deletion.
-\end{alertblock}
 \end{frame}
 
 % ======================================================================
 % 23  BEYOND + SUMMARY
 % ======================================================================
-\begin{frame}{After the paper, and a summary}
-\begin{columns}[T]
-\column{0.5\textwidth}
-\textbf{What came after}
-\begin{itemize}\setlength\itemsep{5pt}\small
-  \item Same idea for flows: phases = Dinic's blocking flows; Even--Tarjan (1975): $O(m\sqrt n)$ on unit-capacity networks.
-  \item The paper hoped for the non-bipartite case: Micali--Vazirani (1980), $O(m\sqrt n)$.
-  \item Almost-linear max-flow (2022), heavy machinery.
-  \item Still the standard bipartite matching routine.
-\end{itemize}
-\column{0.48\textwidth}
-\textbf{Summary}
-\begin{enumerate}\setlength\itemsep{4pt}\small
-  \item A bad matching is repaired by an augmenting path (Lemma 1); none left $\Leftrightarrow$ maximum (Berge).
-  \item One path per search: $O(mn)$.
-  \item Use \emph{shortest} paths (Thm 2): batches of disjoint paths = phases (Cor 3, 4, Alg.\ A).
-  \item $O(\sqrt n)$ phases (Cor 2, Thm 3).
-  \item One phase in $O(m+n)$ (layered graph, Alg.\ B).
-\end{enumerate}
-\end{columns}
-\vspace{-2mm}
-\centering{\huge\color{hkblue}\textbf{Questions?}}
-\end{frame}
-
-% ======================================================================
-\appendix
-\renewcommand{\curpart}{Backup}
-\renewcommand{\curspk}{}\backuptrue
-
-% ======================================================================
-% 8  THEOREM 1
-% ======================================================================
-\begin{frame}{Theorem 1: comparing two matchings}
-\begin{block}{Theorem 1}
-If $M,N$ are matchings with $|M|=r<|N|=s$, then $M\oplus N$ contains at least $s-r$ \textbf{vertex-disjoint augmenting paths} relative to $M$.
-\end{block}
-\vspace{-1mm}
-\begin{columns}[T]
-\column{0.55\textwidth}
-\footnotesize
-\textbf{Proof.} Look at $H=(V,M\oplus N)$: only edges in exactly one of the two.
-\begin{itemize}\setlength\itemsep{2pt}
-  \item Each vertex has $\le1$ edge of $M$ and $\le1$ of $N$, so degree $\le2$: components are \textbf{isolated vertices, even cycles, or paths}, alternating $M,N$.
-  \item $\delta(C)=|C\cap N|-|C\cap M|\in\{-1,0,1\}$, and $\delta=+1$ iff $C$ is augmenting for $M$.
-  \item $\sum_C\delta(C)=|N|-|M|=s-r$, so at least $s-r$ components have $\delta=+1$. \hfill$\square$
-\end{itemize}
-\column{0.43\textwidth}
-\centering
-\begin{tikzpicture}[scale=0.72,v/.style={circle,fill=black!70,inner sep=1.4pt}]
-  \node[v](c1) at (0,0){}; \node[v](c2) at (1.1,0){}; \node[v](c3) at (1.1,1){}; \node[v](c4) at (0,1){};
-  \draw[Medge](c1)--(c2); \draw[Nedge](c2)--(c3); \draw[Medge](c3)--(c4); \draw[Nedge](c4)--(c1);
-  \node[font=\footnotesize] at (0.55,-0.5) {cycle, $\delta=0$};
-  \node[v](p1) at (3,0.5){}; \node[v](p2) at (4.1,0.5){}; \node[v](p3) at (5.2,0.5){}; \node[v](p4) at (6.3,0.5){};
-  \draw[Nedge](p1)--(p2); \draw[Medge](p2)--(p3); \draw[Nedge](p3)--(p4);
-  \node[font=\footnotesize,align=center] at (4.65,-0.5) {\textbf{augmenting}, $\delta=+1$};
-  \node[v](q1) at (3,-1.6){}; \node[v](q2) at (4.1,-1.6){}; \node[v](q3) at (5.2,-1.6){}; \node[v](q4) at (6.3,-1.6){};
-  \draw[Medge](q1)--(q2); \draw[Nedge](q2)--(q3); \draw[Medge](q3)--(q4);
-  \node[font=\footnotesize] at (4.65,-2.2) {$M$ ahead, $\delta=-1$};
-  \node[font=\footnotesize,anchor=west] at (0,-1.4) {\textcolor{hkblue}{\textbf{---}} $M$};
-  \node[font=\footnotesize,anchor=west] at (0,-1.9) {\textcolor{hkorange}{\textbf{- - -}} $N$};
-\end{tikzpicture}
-\end{columns}
-\vspace{1mm}
-{\small\textbf{In plain words:} a better matching must differ from ours by $N$-heavy chains, and those chains are exactly the repairs we know how to make.}
-\end{frame}
-
-% ======================================================================
-% 14  COROLLARY 2
-% ======================================================================
-\begin{frame}{Corollary 2: far from optimal means a short path exists}
-\begin{block}{Corollary 2}
-If $|M|=r$ and a maximum matching has size $s>r$, then there is an augmenting path of length at most $2\lfloor r/(s-r)\rfloor+1$.
-\end{block}
-\begin{columns}[T]
-\column{0.54\textwidth}
-\small\textbf{Proof.}
-\begin{enumerate}\setlength\itemsep{2pt}
-  \item Let $N$ be maximum. Theorem 1: $M\oplus N$ has $s-r$ vertex-disjoint augmenting paths for $M$.
-  \item Together they contain at most $|M|=r$ edges of $M$ (disjoint!).
-  \item So one has at most $\lfloor r/(s-r)\rfloor$ edges of $M$.
-  \item An augmenting path with $k$ edges of $M$ has $2k+1$ edges. \hfill$\square$
-\end{enumerate}
-\column{0.44\textwidth}
+\begin{frame}{After the paper}
+\textbf{Where the idea went}\par\vspace{2mm}
 \small
-\begin{plain}
-Many improvements are still missing ($s-r$ large), and they must share the little matching we have. So some improvement is cheap. Only when $M$ is \emph{nearly} maximum can every augmenting path be long.
-\end{plain}
-{\footnotesize Example: $r=3$, $s=5$: length $\le3$; phase 2 has length 3.}
-\end{columns}
-\end{frame}
-
-% ======================================================================
-% 20  CORRECTNESS + COMPLEXITY OF ALGORITHM B
-% ======================================================================
-\begin{frame}{Why Algorithm B works, and what it costs}
-\begin{columns}[T]
-\column{0.54\textwidth}
-\small
-\textbf{Invariant (paper).} Each time the algorithm is at the line ``PUSH FIRST'', for every vertex $u\ne s,t$:
-\begin{center}\small
-\begin{tabular}{@{}cp{5.6cm}@{}}
-\toprule
-(a) & $u\in B$, on a path already printed\\
-(b) & $u\in B$, on the stack\\
-(c) & $u\in B$, on \emph{no} $s$--$t$ path disjoint from the printed ones\\
-(d) & $u\notin B$: untouched, all its edges present\\
-\bottomrule
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}p{1cm}p{11.2cm}@{}}
+\textbf{\textcolor{hkblue}{1956}} & Ford--Fulkerson: augmenting paths for max-flow. Our repair step is this idea on bipartite graphs.\\
+\textbf{\textcolor{hkblue}{1965}} & Edmonds' blossom algorithm: augmenting paths also work in general graphs, once odd cycles are handled.\\
+\textbf{\textcolor{hkblue}{1973}} & Hopcroft--Karp: shortest paths in phases, $O(m\sqrt n)$ for bipartite graphs. The paper hopes the non-bipartite case can be done too.\\
+\textbf{\textcolor{hkblue}{1975}} & Even--Tarjan: the same phase idea is Dinic's blocking flow, giving $O(m\sqrt n)$ on unit networks (every inner vertex has in- or out-degree $1$). Bipartite matching is one.\\
+\textbf{\textcolor{hkblue}{1980}} & Micali--Vazirani: $O(m\sqrt n)$ matching in general graphs. The hope is met.\\
+\textbf{\textcolor{hkblue}{2022}} & Chen et al.: max-flow in $m^{1+o(1)}$ time, with much heavier machinery and no phases.\\
 \end{tabular}
-\end{center}
-And the stack always holds a path from $s$ to TOP.
-\column{0.46\textwidth}
-\begin{plain}[So]
-When the stack becomes empty, no $s$--$t$ path avoids the printed ones: the set is \textbf{maximal}.
-\end{plain}
-\vspace{2mm}
-\begin{alertblock}{Cost}
-Every pass of an inner loop \textbf{deletes an edge} or \textbf{pops a vertex}, and neither happens twice. Hence $O(m+n)$ per phase.
-\end{alertblock}
-\end{columns}
-{\small\textbf{Building $\widetilde G$ is also linear:} one BFS, each vertex enters a level once and each edge is looked at once: $O(m+n)$.}
 \end{frame}
 
-% ======================================================================
-% 21  WHOLE RUN
-% ======================================================================
-\begin{frame}{The whole run on the example}
-\begin{center}
-\begin{tikzpicture}[scale=0.5]
-  \begin{scope}[shift={(0,0)}]
-    \exnodes \exedges
-    \draw[aug] (xa)--(y1); \draw[aug] (xb)--(y2); \draw[aug] (xc)--(y4);
-    \node[font=\small\bfseries] at (1.4,-3.4) {Phase 1};
-  \end{scope}
-  \begin{scope}[shift={(5.6,0)}]
-    \exnodes \exedges
-    \draw[mat] (xb)--(y2); \draw[mat] (xc)--(y4);
-    \draw[aug] (xd)--(y1); \draw[aug] (xa)--(y1); \draw[aug] (xa)--(y3);
-    \node[font=\small\bfseries] at (1.4,-3.4) {Phase 2};
-  \end{scope}
-  \begin{scope}[shift={(11.2,0)}]
-    \exnodes \exedges
-    \draw[mat] (xa)--(y3); \draw[mat] (xc)--(y4);
-    \draw[aug] (xe)--(y1); \draw[aug] (xd)--(y1); \draw[aug] (xd)--(y2);
-    \draw[aug] (xb)--(y2); \draw[aug] (xb)--(y5);
-    \node[font=\small\bfseries] at (1.4,-3.4) {Phase 3};
-  \end{scope}
-\end{tikzpicture}\\[1mm]
-\small
-\begin{tabular}{lccc}
-\toprule
- & \textbf{Phase 1} & \textbf{Phase 2} & \textbf{Phase 3}\\
-\midrule
-Shortest augmenting length $\ell$ & 1 & 3 & 5\\
-Levels of $\widetilde G$ & $L_0,L_1$ & $L_0..L_3$ & $L_0..L_5$\\
-Paths found by Algorithm B & 3 & 1 & 1\\
-$|M|$ & $0\to3$ & $3\to4$ & $4\to5$\\
-\bottomrule
-\end{tabular}
-\end{center}
-{\small\alert{As proved:} $\ell$ strictly increases ($1<3<5$); phases: $3\le2\lfloor\sqrt5\rfloor+2$.}
-\end{frame}
-
-
-\begin{frame}{Backup: proof of Theorem 2}
-\begin{block}{Theorem 2}
-Let $P$ be a shortest augmenting path for $M$ and $P'$ an augmenting path for $M\oplus P$. Then $\ |P'|\ \ge\ |P|+|P\cap P'|.$
-\end{block}
-\begin{plain}[In plain words]
-Flipping a shortest path can only push the remaining augmenting paths \emph{further away}, never closer. If $P'$ reuses edges of $P$, it is even longer.
-\end{plain}
-\small\textbf{Proof.}
-\begin{enumerate}\setlength\itemsep{0pt}
-  \item $N=M\oplus P\oplus P'$ is a matching with $|N|=|M|+2$.
-  \item Theorem 1: $M\oplus N=P\oplus P'$ contains two disjoint augmenting paths $P_1,P_2$ for $M$, each of length $\ge|P|$ ($P$ is shortest).
-  \item So $|P\oplus P'|\ge2|P|$. But $|P\oplus P'|=|P|+|P'|-2|P\cap P'|$.
-  \item Hence $|P'|\ge|P|+2|P\cap P'|\ \ge\ |P|+|P\cap P'|$. \hfill$\square$
-\end{enumerate}
-\end{frame}
-
-\begin{frame}{Backup: proof of Corollary 4}
-
-\textbf{Claim.} If $|P_i|=|P_j|$ then $P_i,P_j$ are vertex-disjoint.\\[2mm]
-\textbf{Proof.} Suppose not. By Corollary 3 all lengths between $i$ and $j$ are equal. Pick a non-disjoint pair $P_k,P_l$ with $l-k$ \emph{minimal}; then every $P_m$ with $k<m<l$ is disjoint from both.
-\begin{itemize}\setlength\itemsep{3pt}
-  \item The flips of the $P_m$ do not touch $P_l$, so $P_l$ is still augmenting for $M_{k+1}=M_k\oplus P_k$.
-  \item Theorem 2 with $|P_l|=|P_k|$: $P_k\cap P_l=\emptyset$ (no common edge).
-  \item Suppose they share a vertex $v$. In $M_{k+1}$, $v$ is matched by an edge $e$ of $P_k$. $v$ is not an endpoint of $P_l$ (those are free), so $P_l$ passes through $v$ using its matching edge, which is $e$: a common edge. Contradiction. $\square$
-\end{itemize}
-\vspace{2mm}
-\textbf{Why the exact count in Theorem 3.} Before $|M|=r$: lengths are odd numbers $\le2\lfloor\sqrt s\rfloor+1$, at most $\lfloor\sqrt s\rfloor+1$ of them. After: $\le s-r\le\lceil\sqrt s\rceil$ augmentations. Sum $\le2\lfloor\sqrt s\rfloor+2$.
+\begin{frame}
+\vfill
+\centering{\fontsize{36}{40}\selectfont\color{hkblue}\textbf{Questions?}}
+\vfill
 \end{frame}
 
 \end{document}

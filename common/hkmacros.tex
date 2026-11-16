@@ -58,3 +58,66 @@
 }
 % highlight a vertex as free
 \newcommand{\freering}[1]{\draw[freev] (#1) circle (4.4mm);}
+
+% ---- one phase at a glance: edge styles, graph states, level pictures --------
+\tikzset{lnon/.style={line width=0.9pt,draw=black!45},
+        lmat/.style={line width=2pt,draw=black!80},
+        lred/.style={line width=2.4pt,draw=hkred}}
+\newcommand{\usedv}[1]{\fill[white,opacity=0.6] (#1) circle (4.3mm);}
+\newcommand{\deadx}[1]{\draw[hkred,thick] ($(#1)+(-0.28,-0.28)$)--($(#1)+(0.28,0.28)$) ($(#1)+(-0.28,0.28)$)--($(#1)+(0.28,-0.28)$);}
+
+% graph states of the running example (planar drawing); green rings = free vertices
+\newcommand{\exStateA}{\exnodes\exedges % M = empty
+  \freering{xa}\freering{xb}\freering{xc}\freering{xd}\freering{xe}\freering{y1}\freering{y2}\freering{y3}\freering{y4}\freering{y5}}
+\newcommand{\exStateB}{\exnodes\exedges % M = {a1,b2,c4}
+  \draw[mat] (xa)--(y1); \draw[mat] (xb)--(y2); \draw[mat] (xc)--(y4);
+  \freering{xd}\freering{xe}\freering{y3}\freering{y5}}
+\newcommand{\exStateC}{\exnodes\exedges % M = {d1,a3,b2,c4}
+  \draw[mat] (xd)--(y1); \draw[mat] (xa)--(y3); \draw[mat] (xb)--(y2); \draw[mat] (xc)--(y4);
+  \freering{xe}\freering{y5}}
+\newcommand{\exStateD}{\exnodes\exedges % M = {e1,d2,b5,a3,c4}: perfect
+  \draw[mat] (xe)--(y1); \draw[mat] (xd)--(y2); \draw[mat] (xb)--(y5); \draw[mat] (xa)--(y3); \draw[mat] (xc)--(y4);}
+
+% level pictures, drawn top-down (level 0 on top), units in cm
+% phase 1 (M empty): two levels
+\newcommand{\phOneNodes}{%
+  \node[boy] (Qa) at (-1.8,0) {$a$}; \node[boy] (Qe) at (-0.9,0) {$e$}; \node[boy] (Qd) at (0,0) {$d$};
+  \node[boy] (Qb) at (0.9,0) {$b$}; \node[boy] (Qc) at (1.8,0) {$c$};
+  \node[girl] (Q3) at (-1.8,-2) {$3$}; \node[girl] (Q1) at (-0.9,-2) {$1$}; \node[girl] (Q2) at (0,-2) {$2$};
+  \node[girl] (Q5) at (0.9,-2) {$5$}; \node[girl] (Q4) at (1.8,-2) {$4$};
+  \node[layerlab,anchor=east] at (-2.3,0) {level 0}; \node[layerlab,anchor=east] at (-2.3,-2) {level 1};}
+\newcommand{\phOneEdges}{%
+  \draw[lnon] (Qa)--(Q1); \draw[lnon] (Qa)--(Q3); \draw[lnon] (Qb)--(Q2); \draw[lnon] (Qb)--(Q5);
+  \draw[lnon] (Qc)--(Q4); \draw[lnon] (Qc)--(Q5); \draw[lnon] (Qd)--(Q1); \draw[lnon] (Qd)--(Q2); \draw[lnon] (Qe)--(Q1);}
+\newcommand{\phOneDFS}{%
+  \draw[lred] (Qa)--(Q1); \draw[lred] (Qb)--(Q2); \draw[lred] (Qc)--(Q4);
+  \usedv{Qa}\usedv{Q1}\usedv{Qb}\usedv{Q2}\usedv{Qc}\usedv{Q4}\deadx{Q3}\deadx{Q5}}
+
+% phase 2 (M = {a1,b2,c4}): four levels
+\newcommand{\phTwoNodes}{%
+  \node[boy] (Pd) at (-0.9,0) {$d$}; \node[boy] (Pe) at (0.9,0) {$e$};
+  \node[girl] (P1) at (-0.9,-1.2) {$1$}; \node[girl] (P2) at (0.9,-1.2) {$2$};
+  \node[boy] (Pa) at (-0.9,-2.4) {$a$}; \node[boy] (Pb) at (0.9,-2.4) {$b$};
+  \node[girl] (P3) at (-0.9,-3.6) {$3$}; \node[girl] (P5) at (0.9,-3.6) {$5$};
+  \foreach \i in {0,1,2,3} \node[layerlab,anchor=east] at (-1.5,-1.2*\i) {level \i};
+  \freering{Pd}\freering{Pe}\freering{P3}\freering{P5}}
+\newcommand{\phTwoEdges}{%
+  \draw[lnon] (Pd)--(P1); \draw[lnon] (Pe)--(P1); \draw[lnon] (Pd)--(P2);
+  \draw[lmat] (P1)--(Pa); \draw[lmat] (P2)--(Pb);
+  \draw[lnon] (Pa)--(P3); \draw[lnon] (Pb)--(P5);}
+\newcommand{\phTwoDFS}{%
+  \draw[lred] (Pd)--(P1); \draw[lred] (P1)--(Pa); \draw[lred] (Pa)--(P3);
+  \usedv{Pd}\usedv{P1}\usedv{Pa}\usedv{P3}\deadx{P5}\deadx{Pb}\deadx{P2}}
+
+% phase 3 (M = {d1,a3,b2,c4}): a single chain of six levels
+\newcommand{\phThreeNodes}{%
+  \node[boy] (Se) at (0,0) {$e$}; \node[girl] (S1) at (0,-0.85) {$1$}; \node[boy] (Sd) at (0,-1.7) {$d$};
+  \node[girl] (S2) at (0,-2.55) {$2$}; \node[boy] (Sb) at (0,-3.4) {$b$}; \node[girl] (S5) at (0,-4.25) {$5$};
+  \foreach \i in {0,1,2,3,4,5} \node[layerlab,anchor=east] at (-0.6,-0.85*\i) {level \i};
+  \freering{Se}\freering{S5}}
+\newcommand{\phThreeEdges}{%
+  \draw[lnon] (Se)--(S1); \draw[lmat] (S1)--(Sd); \draw[lnon] (Sd)--(S2);
+  \draw[lmat] (S2)--(Sb); \draw[lnon] (Sb)--(S5);}
+\newcommand{\phThreeDFS}{%
+  \draw[lred] (Se)--(S1); \draw[lred] (S1)--(Sd); \draw[lred] (Sd)--(S2);
+  \draw[lred] (S2)--(Sb); \draw[lred] (Sb)--(S5);}
