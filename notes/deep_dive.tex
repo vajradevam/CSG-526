@@ -232,8 +232,15 @@ Suppose after the phase a path $R$ of length $\ell$ were still augmenting. Then 
 \subsection*{The question}
 A phase is cheap. But if there were $n$ phases we would gain nothing over the classical $O(mn)$. How many are there?
 
-\subsection*{The big idea in one sentence}
-\emph{Long paths use up many vertices, and the graph has only $n$ vertices, so there cannot be many long disjoint paths; and short phases are used up quickly because the length grows every phase.}
+\subsection*{The two facts, and why neither is enough alone}
+\begin{enumerate}
+  \item Every phase makes the shortest augmenting path \textbf{longer}. Lengths are odd, so it grows by at least 2: $1,3,5,7,\dots$
+  \item Every phase adds \textbf{at least one pair} to the matching.
+\end{enumerate}
+Fact 2 alone gives only ``at most $n/2$ phases'', which is useless. Fact 1 is what helps, because of one sentence:
+
+\begin{key}A long augmenting path uses up many vertices, and the graph has only $n$ vertices. So there cannot be many long paths that are disjoint.\end{key}
+Short paths get used up quickly (each phase pushes the length up); long paths cannot be numerous (they do not fit). Count the phases in two stages.
 
 \subsection*{Step 1: after $\sqrt n$ phases, the shortest path is long}
 Lengths are odd and strictly increase from phase to phase, so each phase adds at least 2. Phase 1 has length $\ge1$, phase $k$ has length $\ge2k-1$. Once $\sqrt n$ phases are done, the next shortest augmenting path has length $\ge2\sqrt n+1$.
@@ -260,8 +267,32 @@ We are $s-r\le\tfrac12\sqrt n$ pairs short, and every phase adds at least one pa
 \subsection*{Total}
 $\sqrt n+\tfrac12\sqrt n=\tfrac32\sqrt n=O(\sqrt n)$ phases. (The paper's careful count is $2\lfloor\sqrt s\rfloor+2$.)
 
+\subsection*{The argument with real numbers: $n=100$}
+\begin{itemize}
+  \item \textbf{Stage 1.} $\sqrt n=10$, so run 10 phases. Just count them: 10 phases.
+  \item After that the shortest augmenting path has length $\ge21$, so it has at least 22 vertices.
+  \item Suppose $k$ pairs are still missing. There are $k$ disjoint augmenting paths (Theorem 1), each with $\ge22$ vertices. Five of them would need $5\cdot22=110>100$ vertices, which do not exist. So $k\le4$.
+  \item \textbf{Stage 2.} Each phase adds at least one pair, so at most 4 more phases.
+\end{itemize}
+Total: at most $10+4=14$ phases, against up to 50 separate searches for the classical algorithm. (The formula gives $\frac32\sqrt{100}=15$.)
+
 \subsection*{Why $\sqrt n$ and not some other cut-off?}
-Cut after $t$ phases instead. The first part costs $t$ phases, the second at most $n/(2t)$. The sum $t+\frac{n}{2t}$ is balanced, and smallest, when $t=\sqrt{n/2}$: so the optimal split is of order $\sqrt n$. A smaller $t$ makes the second part huge; a larger $t$ wastes phases in the first part. Both parts are pushed to $\Theta(\sqrt n)$. This is the same ``balance two costs'' trick as in many $\sqrt n$ bounds.
+Stop Stage 1 after $t$ phases instead. Stage 1 costs $t$ phases. In Stage 2 the shortest path has length about $2t$, so at most $n/(2t)$ pairs are missing, hence at most $n/(2t)$ more phases. The total is at most $t+\frac n{2t}$: two costs to balance. For $n=100$:
+\begin{center}
+\begin{tabular}{@{}rrrr@{}}
+\toprule
+$t$ & Stage 1 phases & Stage 2: at most $n/(2t)$ & total\\\midrule
+1 & 1 & 50 & 51\\
+5 & 5 & 10 & 15\\
+7 & 7 & 7.1 & about 14 (best)\\
+10 & 10 & 5 & 15\\
+25 & 25 & 2 & 27\\
+50 & 50 & 1 & 51\\\bottomrule
+\end{tabular}
+\end{center}
+A small $t$ leaves Stage 2 huge; a large $t$ makes Stage 1 itself huge. The two are equal at $t=\sqrt{n/2}\approx7$, which is of order $\sqrt n$. That is the only reason $\sqrt n$ appears. (We took $t=\sqrt n$ for a clean proof; the constant is slightly worse, $\frac32\sqrt n$ instead of $\sqrt2\sqrt n$, but the order is the same.)
+
+\textbf{One-line version for the class:} short paths get used up quickly because each phase pushes the length up, and long paths cannot be numerous because they do not fit in $n$ vertices.
 
 \subsection*{How big a win is it?}
 \begin{center}
